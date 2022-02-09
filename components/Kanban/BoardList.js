@@ -1,5 +1,6 @@
 // import { Link } from 'react-router-dom'
 import { useState } from 'react'
+import Link from 'next/link'
 
 import Modal from '@/components/Modal/Modal'
 import { HiOutlineTrash } from 'react-icons/hi'
@@ -16,12 +17,9 @@ const BoardList = ({ boards, addNewBoard, deleteBoard, userId }) => {
         setId(id)
         setModal(true)
     }
-
     const onSubmitAddNewBoard = (e) => {
         e.preventDefault()
-
         addNewBoard({ name: e.target.elements.boardName.value })
-
         e.target.elements.boardName.value = ''
     }
 
@@ -50,20 +48,22 @@ const BoardList = ({ boards, addNewBoard, deleteBoard, userId }) => {
                     <div className="mt-2 flex flex-wrap">
                         {boards.map((b) => (
                             <div
-                                className="mb-3 mr-4 w-full rounded-lg bg-white py-4 px-6 shadow-md sm:w-auto"
+                                className="mb-3 mr-4 flex w-full items-center justify-between rounded-lg bg-white py-4 px-6 shadow-md sm:w-auto"
                                 key={b.id}
                             >
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-lg text-gray-700 hover:text-gray-900 sm:text-2xl">
-                                        {b.name}
-                                    </h2>
-                                    <div
-                                        onClick={() => openDeleteModal(b.id)}
-                                        className="ml-6 cursor-pointer text-red-500 hover:text-red-700"
-                                    >
-                                        <HiOutlineTrash />
-                                    </div>
-                                </div>
+                                <Link href={`/boards/${b.id}`}>
+                                    <a className="flex items-center justify-between ">
+                                        <h2 className="text-lg text-gray-700 hover:text-gray-900 sm:text-2xl">
+                                            {b.name}
+                                        </h2>
+                                    </a>
+                                </Link>
+                                <button
+                                    onClick={() => openDeleteModal(b.id)}
+                                    className="ml-6 cursor-pointer text-red-500 hover:text-red-700"
+                                >
+                                    <HiOutlineTrash />
+                                </button>
                             </div>
                         ))}
                         {boards.length === 0 ? (
