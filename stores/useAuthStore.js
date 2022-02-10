@@ -20,7 +20,7 @@ const useAuthStore = create((set, get) => ({
     authListener: (router) => {
         onAuthStateChanged(auth, (authUser) => {
             if (authUser) {
-                console.log('LOGGED IN', authUser)
+                // console.log('LOGGED IN', authUser)
                 set({ user: authUser })
                 set({ loading: false })
                 // db.collection('users')
@@ -33,7 +33,7 @@ const useAuthStore = create((set, get) => ({
                 //         setLoading(false)
                 //     })
             } else {
-                console.log('NO')
+                // console.log('NO')
                 set({ user: null })
                 set({ loading: false })
                 // setTimeout(() => { set({ loading: false })}, 2000)

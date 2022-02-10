@@ -34,7 +34,7 @@ function MyApp({ Component, pageProps }) {
                 router.push('/')
             }
         }
-        console.log(router)
+        // console.log(router)
     }, [user])
 
     // if (loading) {

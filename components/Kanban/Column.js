@@ -1,57 +1,53 @@
+import { useState, useRef } from 'react'
 import { Droppable, Draggable } from 'react-beautiful-dnd'
 import Task from './Task'
-
-import { Bin, Exclaim } from './Icons'
-
-import { db, firebase } from '../firebase/fbConfig'
-import { debounce } from '../utils'
-import { useState, useRef } from 'react'
-import Modal from './Modal'
+// import { Bin, Exclaim } from './Icons'
+// import { debounce } from '../utils'
+// import Modal from './Modal'
+// import { db, firebase } from '../firebase/fbConfig'
 
 const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) => {
     const [modal, setModal] = useState(false)
     const [editingCol, setEditing] = useState(false)
     const colInput = useRef(null)
 
-    const deleteCol = (colId, tasks) => {
-        db.collection(`users/${userId}/boards/${boardId}/columns`)
-            .doc('columnOrder')
-            .update({ order: firebase.firestore.FieldValue.arrayRemove(colId) })
+    // const deleteCol = (colId, tasks) => {
+    //     db.collection(`users/${userId}/boards/${boardId}/columns`)
+    //         .doc('columnOrder')
+    //         .update({ order: firebase.firestore.FieldValue.arrayRemove(colId) })
 
-        db.collection(`users/${userId}/boards/${boardId}/columns`).doc(colId).delete()
+    //     db.collection(`users/${userId}/boards/${boardId}/columns`).doc(colId).delete()
 
-        //Extract and delete its tasks
-        tasks.forEach((t) => {
-            db.collection(`users/${userId}/boards/${boardId}/tasks`).doc(t).delete()
-        })
-    }
+    //     //Extract and delete its tasks
+    //     tasks.forEach((t) => {
+    //         db.collection(`users/${userId}/boards/${boardId}/tasks`).doc(t).delete()
+    //     })
+    // }
 
-    const changeColName = debounce((e, colId) => {
-        db.collection(`users/${userId}/boards/${boardId}/columns`)
-            .doc(colId)
-            .update({ title: e.target.value })
-    }, 7000)
+    // const changeColName = debounce((e, colId) => {
+    //     db.collection(`users/${userId}/boards/${boardId}/columns`).doc(colId).update({ title: e.target.value })
+    // }, 7000)
 
-    const moveToInp = () => {
-        setEditing(true)
-        setTimeout(() => {
-            colInput.current.focus()
-        }, 50)
-    }
+    // const moveToInp = () => {
+    //     setEditing(true)
+    //     setTimeout(() => {
+    //         colInput.current.focus()
+    //     }, 50)
+    // }
 
     return (
         <>
             <Draggable draggableId={column.id} index={index} key={column.id}>
                 {(provided) => (
                     <div {...provided.draggableProps} ref={provided.innerRef} className="mr-5">
-                        <div style={{ background: '#edf2ff' }}>
+                        <div className="bg-primary-50">
                             <div
                                 {...provided.dragHandleProps}
-                                className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 flex items-center justify-between px-4 py-1 rounded-sm"
+                                className="flex items-center justify-between rounded-sm bg-primary-400 bg-gradient-to-r px-4 py-1"
                             >
                                 <input
                                     ref={colInput}
-                                    className={`sm:text-xl text-blue-700 text-lg px-2 w-10/12 ${
+                                    className={`w-10/12 px-2 text-lg text-primary-700 sm:text-xl ${
                                         editingCol ? '' : 'hidden'
                                     }`}
                                     onBlur={() => setEditing(false)}
@@ -60,18 +56,18 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                                     onChange={(e) => changeColName(e, column.id)}
                                 />
                                 <h2
-                                    className={`sm:text-lg text-blue-100 truncate text-lg ${
+                                    className={`truncate text-lg text-primary-100 sm:text-lg ${
                                         editingCol ? 'hidden' : ''
                                     }`}
-                                    onClick={moveToInp}
+                                    // onClick={moveToInp}
                                 >
-                                    {column.title}{' '}
+                                    {column.title}
                                 </h2>
                                 <div
-                                    className="text-blue-700 hover:text-blue-50 cursor-pointer"
+                                    className="cursor-pointer text-primary-700 hover:text-primary-50"
                                     onClick={() => setModal(true)}
                                 >
-                                    <Bin />
+                                    TRASH
                                 </div>
                             </div>
                             <Droppable droppableId={column.id} type="task">
@@ -79,10 +75,8 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                                     <div
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}
-                                        className={`shadow-sm h-full py-4 px-2 ${
-                                            snapshot.isDraggingOver
-                                                ? 'bg-gradient-to-br from-green-400 via-green-200 to-green-100'
-                                                : ''
+                                        className={`h-full py-4 px-2 shadow-sm ${
+                                            snapshot.isDraggingOver ? 'bg-green-100 ' : ''
                                         }`}
                                     >
                                         {tasks.map((t, i) => (
@@ -102,38 +96,33 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                                 )}
                             </Droppable>
                         </div>
-                        <Modal
-                            modal={modal}
-                            setModal={setModal}
-                            ariaText="Column Delete confirmation"
-                        >
+                        {/* <Modal modal={modal} setModal={setModal} ariaText="Column Delete confirmation">
                             <div className="md:px-12">
-                                <div className="text-yellow-600 mb-2">
+                                <div className="mb-2 text-yellow-600">
                                     <Exclaim />
                                 </div>
-                                <h2 className="text-base md:text-2xl text-gray-900 mb-2">
+                                <h2 className="mb-2 text-base text-gray-900 md:text-2xl">
                                     Are you sure you want to delete this column?
                                 </h2>
-                                <h3 className="text-red-600 text-sm md:text-lg">
-                                    This column and its tasks will be permanently deleted and it
-                                    cannot be undone.
+                                <h3 className="text-sm text-red-600 md:text-lg">
+                                    This column and its tasks will be permanently deleted and it cannot be undone.
                                 </h3>
                                 <div className="my-8 flex">
                                     <button
-                                        className="border border-red-700 text-red-600 px-2 py-1 rounded-sm mr-4 text-sm md:text-base"
+                                        className="mr-4 rounded-sm border border-red-700 px-2 py-1 text-sm text-red-600 md:text-base"
                                         onClick={() => deleteCol(column.id, tasks)}
                                     >
                                         Yes, delete
                                     </button>
                                     <button
-                                        className="bg-blue-800 text-gray-100 px-2 py-1 rounded-sm text-sm md:text-base"
+                                        className="rounded-sm bg-blue-800 px-2 py-1 text-sm text-gray-100 md:text-base"
                                         onClick={() => setModal(false)}
                                     >
                                         No, go back
                                     </button>
                                 </div>
                             </div>
-                        </Modal>
+                        </Modal> */}
                     </div>
                 )}
             </Draggable>

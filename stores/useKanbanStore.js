@@ -13,7 +13,7 @@ const useKanbanStore = create((set, get) => ({
     tasks: [],
     columns: [],
     columnOrder: [],
-    kanbanData: [],
+    kanbanData: { columnOrder: [], columns: {}, tasks: {} },
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     setBoard: async (payload, id = null, userId, addColumnOrder = false) => {
         let docSnap
@@ -26,7 +26,7 @@ const useKanbanStore = create((set, get) => ({
         }
         if (addColumnOrder) {
             const columnOrder = { id: 'columnOrder', order: [] }
-            get().setColumnOrder(columnOrder, userId, docSnap.id)
+            get().setColumn(columnOrder, userId, docSnap.id, 'columnOrder')
         }
     },
     //?---------------------------------
@@ -45,11 +45,17 @@ const useKanbanStore = create((set, get) => ({
     },
 
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    setColumnOrder: async (payload, userId, boardId) => {
-        const ref = doc(collection(db, `users/${userId}/boards/${boardId}/columns`), 'columnOrder')
-        await setDoc(ref, payload)
+
+    //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    setColumn: async (payload, userId, boardId, columnId) => {
+        try {
+            const ref = doc(collection(db, `users/${userId}/boards/${boardId}/columns`), columnId)
+            await setDoc(ref, payload, { merge: true })
+        } catch (err) {
+            console.log(err)
+        }
     },
-    deleteCol: (payload) => {},
+    deleteColumn: (payload) => {},
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     getKanbanTasks: async (userId, boardId) => {
         onSnapshot(collection(db, `users/${userId}/boards/${boardId}/tasks`), (snapshot) => {
@@ -73,27 +79,16 @@ const useKanbanStore = create((set, get) => ({
     setKanbanData: (payload) => {
         set({ kanbanData: payload })
     },
-    //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    addTodo: (payload) => {
-        addDoc(get().collectionRef, { title: payload })
-    },
-    setTodo: async (payload, id = null) => {
-        if (id) {
-            console.log('ID')
-            const ref = doc(get().collectionRef, id)
+    setBoardName: async (payload, userId, boardId) => {
+        try {
+            const ref = doc(collection(db, `users/${userId}/boards`), boardId)
             await setDoc(ref, payload)
-            console.log(doc)
-        } else {
-            const ref = get().collectionRef
-            const doc = await addDoc(ref, payload)
-            console.log(doc)
+            set({ boardName: payload.name })
+        } catch (err) {
+            console.log(err)
         }
     },
-
-    removeTodo: (payload) => {
-        deleteDoc(doc(get().collectionRef, payload))
-    },
+    //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 }))
 
 export default useKanbanStore

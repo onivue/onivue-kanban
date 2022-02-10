@@ -6,7 +6,7 @@ const Boards = () => {
     const boards = useKanbanStore((state) => state.boards)
     const getBoards = useKanbanStore((state) => state.getBoards)
     const setBoard = useKanbanStore((state) => state.setBoard)
-    const setColumnOrder = useKanbanStore((state) => state.setColumnOrder)
+
     const deleteBoard = useKanbanStore((state) => state.deleteBoard)
     const user = useAuthStore((state) => state.user)
 
@@ -16,9 +16,7 @@ const Boards = () => {
     }, [user.uid])
 
     const addNewBoard = (boardName, boardId) => {
-        // const columnOrder = { id: 'columnOrder', order: [] }
         setBoard(boardName, null, user.uid, true)
-        // setColumnOrder(columnOrder, user.uid, boardId)
     }
 
     return (
@@ -33,12 +31,7 @@ const Boards = () => {
             >
                 ADD BOARD
             </button>
-            <BoardList
-                addNewBoard={addNewBoard}
-                boards={boards}
-                deleteBoard={deleteBoard}
-                userId={user.uid}
-            />
+            <BoardList addNewBoard={addNewBoard} boards={boards} deleteBoard={deleteBoard} userId={user.uid} />
         </div>
     )
 }
