@@ -1,5 +1,8 @@
+import useKanbanStore from '@/stores/useKanbanStore'
 import { useState, useRef } from 'react'
 import { Droppable, Draggable } from 'react-beautiful-dnd'
+import { HiOutlineTrash } from 'react-icons/hi'
+import Modal from '../Modal/Modal'
 import Task from './Task'
 // import { Bin, Exclaim } from './Icons'
 // import { debounce } from '../utils'
@@ -7,33 +10,10 @@ import Task from './Task'
 // import { db, firebase } from '../firebase/fbConfig'
 
 const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) => {
+    const deleteColumn = useKanbanStore((state) => state.deleteColumn)
     const [modal, setModal] = useState(false)
     const [editingCol, setEditing] = useState(false)
     const colInput = useRef(null)
-
-    // const deleteCol = (colId, tasks) => {
-    //     db.collection(`users/${userId}/boards/${boardId}/columns`)
-    //         .doc('columnOrder')
-    //         .update({ order: firebase.firestore.FieldValue.arrayRemove(colId) })
-
-    //     db.collection(`users/${userId}/boards/${boardId}/columns`).doc(colId).delete()
-
-    //     //Extract and delete its tasks
-    //     tasks.forEach((t) => {
-    //         db.collection(`users/${userId}/boards/${boardId}/tasks`).doc(t).delete()
-    //     })
-    // }
-
-    // const changeColName = debounce((e, colId) => {
-    //     db.collection(`users/${userId}/boards/${boardId}/columns`).doc(colId).update({ title: e.target.value })
-    // }, 7000)
-
-    // const moveToInp = () => {
-    //     setEditing(true)
-    //     setTimeout(() => {
-    //         colInput.current.focus()
-    //     }, 50)
-    // }
 
     return (
         <>
@@ -67,7 +47,7 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                                     className="cursor-pointer text-primary-700 hover:text-primary-50"
                                     onClick={() => setModal(true)}
                                 >
-                                    TRASH
+                                    <HiOutlineTrash />
                                 </div>
                             </div>
                             <Droppable droppableId={column.id} type="task">
@@ -96,33 +76,23 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                                 )}
                             </Droppable>
                         </div>
-                        {/* <Modal modal={modal} setModal={setModal} ariaText="Column Delete confirmation">
-                            <div className="md:px-12">
-                                <div className="mb-2 text-yellow-600">
-                                    <Exclaim />
-                                </div>
-                                <h2 className="mb-2 text-base text-gray-900 md:text-2xl">
-                                    Are you sure you want to delete this column?
-                                </h2>
-                                <h3 className="text-sm text-red-600 md:text-lg">
-                                    This column and its tasks will be permanently deleted and it cannot be undone.
-                                </h3>
-                                <div className="my-8 flex">
-                                    <button
-                                        className="mr-4 rounded-sm border border-red-700 px-2 py-1 text-sm text-red-600 md:text-base"
-                                        onClick={() => deleteCol(column.id, tasks)}
-                                    >
-                                        Yes, delete
-                                    </button>
-                                    <button
-                                        className="rounded-sm bg-blue-800 px-2 py-1 text-sm text-gray-100 md:text-base"
-                                        onClick={() => setModal(false)}
-                                    >
-                                        No, go back
-                                    </button>
-                                </div>
-                            </div>
-                        </Modal> */}
+                        <Modal
+                            show={modal}
+                            onClose={() => setModal(false)}
+                            onCancel={() => setModal(false)}
+                            onSubmit={() => {
+                                deleteColumn(userId, boardId, column.id, tasks)
+                            }}
+                            title="Board Delete confirmation"
+                            type="warning"
+                        >
+                            <h2 className="mb-2 text-xl text-gray-900 ">
+                                Are you sure you want to delete this column?
+                            </h2>
+                            <h3 className="text-base text-red-600 ">
+                                This column and its tasks will be permanently deleted and it cannot be undone.
+                            </h3>
+                        </Modal>
                     </div>
                 )}
             </Draggable>

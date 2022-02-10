@@ -1,6 +1,18 @@
 import create from 'zustand'
 import { db } from '@/lib/firebase'
-import { collection, query, onSnapshot, doc, addDoc, deleteDoc, setDoc, getDocs, getDoc } from 'firebase/firestore'
+import {
+    collection,
+    query,
+    onSnapshot,
+    doc,
+    addDoc,
+    deleteDoc,
+    setDoc,
+    getDocs,
+    getDoc,
+    arrayUnion,
+    arrayRemove,
+} from 'firebase/firestore'
 
 const useKanbanStore = create((set, get) => ({
     loading: true,
@@ -25,8 +37,8 @@ const useKanbanStore = create((set, get) => ({
             docSnap = await addDoc(ref, payload)
         }
         if (addColumnOrder) {
-            const columnOrder = { id: 'columnOrder', order: [] }
-            get().setColumn(columnOrder, userId, docSnap.id, 'columnOrder')
+            const columnOrder = { id: '__columnOrder', order: [] }
+            get().setColumn(columnOrder, userId, docSnap.id, '__columnOrder')
         }
     },
     //?---------------------------------
@@ -45,17 +57,35 @@ const useKanbanStore = create((set, get) => ({
     },
 
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    setColumn: async (payload, userId, boardId, columnId) => {
+    setColumn: async (payload, userId, boardId, columnId, columnOrder = { type: 'add' }) => {
+        const ref = doc(collection(db, `users/${userId}/boards/${boardId}/columns`), columnId)
+        if (columnId === '__columnOrder' && !Array.isArray(payload.order)) {
+            if (columnOrder.type === 'add') {
+                payload = { ...payload, order: arrayUnion(payload.order) }
+            }
+            if (columnOrder.type === 'delete') {
+                payload = { ...payload, order: arrayRemove(payload.order) }
+                console.log('DELETE', payload)
+            }
+        }
+        await setDoc(ref, payload, { merge: true })
+    },
+    deleteColumn: async (userId, boardId, columnId, tasks) => {
         try {
-            const ref = doc(collection(db, `users/${userId}/boards/${boardId}/columns`), columnId)
-            await setDoc(ref, payload, { merge: true })
+            // UPDATE ORDER
+            get().setColumn({ order: columnId }, userId, boardId, '__columnOrder', { type: 'delete' })
+            // DELETE DOC
+            const ref = doc(db, `users/${userId}/boards/${boardId}/columns`, columnId)
+            await deleteDoc(ref)
+            // DELETE TASKS
+            tasks.forEach(async (task) => {
+                const ref = doc(db, `users/${userId}/boards/${boardId}/tasks`, task)
+                await deleteDoc(ref)
+            })
         } catch (err) {
             console.log(err)
         }
     },
-    deleteColumn: (payload) => {},
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     getKanbanTasks: async (userId, boardId) => {
         onSnapshot(collection(db, `users/${userId}/boards/${boardId}/tasks`), (snapshot) => {

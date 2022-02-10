@@ -1,4 +1,4 @@
-import 'tailwindcss/tailwind.css'
+import '@/styles/globals.css'
 import useAuthStore from '@/stores/useAuthStore'
 import shallow from 'zustand/shallow'
 import { useEffect } from 'react'

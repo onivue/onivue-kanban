@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
+
 // import ChecklistProgress from './ChecklistProgress'
 // import { extractPriority } from '../utils'
 // import Modal from './Modal'
@@ -41,12 +42,10 @@ const Task = ({ allData, id, index, boardId, userId, columnDetails, filterBy }) 
                         {...provided.dragHandleProps}
                         ref={provided.innerRef}
                         className={`mb-4 rounded px-1.5 py-2.5 shadow-lg transition-shadow duration-300 hover:shadow-xl ${
-                            snapshot.isDragging
-                                ? 'bg-gradient-to-r from-red-100 to-blue-100 text-gray-900'
-                                : 'bg-white text-gray-800'
+                            snapshot.isDragging ? 'bg-primary-200 ' : 'bg-white '
                         }`}
                     >
-                        <div className="w-full">
+                        <div className="flex w-full items-center">
                             <h4 className="text-sm sm:text-base">{theTask.title}</h4>
                             <div className="mt-2 flex space-x-3 sm:space-x-5">
                                 {/* // TODO ICONS */}
