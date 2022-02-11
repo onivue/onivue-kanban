@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import { DragDropContext } from 'react-beautiful-dnd'
-
+import shallow from 'zustand/shallow'
 // This gets called on every request
 export async function getServerSideProps(context) {
     const boardId = context.params.boardId
@@ -16,129 +16,101 @@ export default function BoardView({ boardId }) {
     const [modal, setModal] = useState(false)
     const [filter, setFilter] = useState(null)
     const filters = ['high', 'medium', 'low']
+    const [initialKanbanData, setInitialKanbanData] = useState(null)
+    const [clientKanbanData, setClientKanbanData] = useState(null)
 
     const user = useAuthStore((state) => state.user)
-    const {
-        getKanbanTasks,
-        kanbanData,
-        getKanbanBoardName,
-        getKanbanColumns,
-        setKanbanData,
-        tasks,
-        columns,
-        boardName,
-        setBoardName,
-        setColumn,
-    } = useKanbanStore((state) => ({
-        getKanbanTasks: state.getKanbanTasks,
-        getKanbanBoardName: state.getKanbanBoardName,
-        getKanbanColumns: state.getKanbanColumns,
-        tasks: state.tasks,
-        columns: state.columns,
-        boardName: state.boardName,
-        setKanbanData: state.setKanbanData,
-        kanbanData: state.kanbanData,
-        setBoardName: state.setBoardName,
-        setColumn: state.setColumn,
-    }))
+    const { kanbanData, setBoardName, setColumn, getKanbanData } = useKanbanStore(
+        (state) => ({
+            getKanbanData: state.getKanbanData,
+            kanbanData: state.kanbanData,
+            setColumn: state.setColumn,
+        }),
+        shallow,
+    )
 
     useEffect(() => {
-        const unsubscribe = () => getKanbanTasks(user.uid, boardId)
-        return unsubscribe()
-    }, [user.uid, boardId])
-
-    useEffect(() => {
-        const unsubscribe = () => getKanbanBoardName(user.uid, boardId)
-        return unsubscribe()
-    }, [user.uid, boardId])
-
-    useEffect(() => {
-        const unsubscribe = () => getKanbanColumns(user.uid, boardId)
-        return unsubscribe()
-    }, [user.uid, boardId])
-
-    // MERGE OBJECT TO FINAL OBJECT
-    useEffect(() => {
-        if (tasks && columns) {
-            const kanbanData = {}
-
-            const co = columns.find((c) => c.id === '__columnOrder')
-            const cols = columns.filter((c) => c.id !== '__columnOrder')
-
-            kanbanData.columnOrder = co?.order || []
-            kanbanData.columns = {}
-            kanbanData.tasks = {}
-
-            tasks.forEach((t) => (kanbanData.tasks[t.id] = t))
-            cols.forEach((c) => (kanbanData.columns[c.id] = c))
-
-            setKanbanData(kanbanData)
+        let unsubscribe
+        const getSubscribe = async () => {
+            unsubscribe = getKanbanData(user.uid, boardId)
         }
-    }, [tasks, columns])
+        getSubscribe()
+        return () => {
+            unsubscribe()
+        }
+    }, [user.uid, boardId])
 
-    const onDragEnd = (result) => {
-        const { destination, source, draggableId } = result
+    useEffect(() => {
+        const finalObject = kanbanData
+        //MINI DEBOUNCE FOR FIXING WEIRD HANDLING
+        const handler = setTimeout(() => {
+            setClientKanbanData(finalObject)
+        }, 10)
+        return () => {
+            clearTimeout(handler)
+        }
+    }, [kanbanData])
 
+    const onDragEnd = ({ destination, source, draggableId, type }) => {
+        //DROPPED OUTSIDE ZONE
         if (!destination) return
 
-        if (result.type === 'task') {
-            const startColumn = kanbanData.columns[source.droppableId]
-            const endColumn = kanbanData.columns[destination.droppableId]
+        // TASK DROP HANDLE
+        if (type === 'task') {
+            const sourceColumn = clientKanbanData.columns[source.droppableId]
+            const destinationColumn = clientKanbanData.columns[destination.droppableId]
 
-            if (startColumn === endColumn) {
-                const newTaskIds = Array.from(endColumn.taskIds)
+            if (sourceColumn === destinationColumn) {
+                const newTaskIds = Array.from(destinationColumn.taskIds)
 
                 newTaskIds.splice(source.index, 1)
                 newTaskIds.splice(destination.index, 0, draggableId)
 
-                const newColumn = {
-                    ...endColumn,
+                const updatetColumn = {
+                    ...destinationColumn,
                     taskIds: newTaskIds,
                 }
-
                 const newState = {
-                    ...kanbanData,
-                    columns: { ...kanbanData.columns, [endColumn.id]: newColumn },
+                    ...clientKanbanData,
+                    columns: {
+                        ...clientKanbanData.columns,
+                        [destinationColumn.id]: updatetColumn,
+                    },
                 }
-
-                setKanbanData(newState)
-                setColumn({ taskIds: newTaskIds }, user.uid, boardId, startColumn.id)
+                setClientKanbanData(newState)
+                setColumn({ taskIds: newTaskIds }, user.uid, boardId, sourceColumn.id)
                 return
             }
 
-            const startTaskIDs = Array.from(startColumn.taskIds)
+            const startTaskIDs = Array.from(sourceColumn.taskIds)
             startTaskIDs.splice(source.index, 1)
             const newStart = {
-                ...startColumn,
+                ...sourceColumn,
                 taskIds: startTaskIDs,
             }
 
-            const finishTaskIDs = Array.from(endColumn.taskIds)
+            const finishTaskIDs = Array.from(destinationColumn.taskIds)
             finishTaskIDs.splice(destination.index, 0, draggableId)
             const newFinish = {
-                ...endColumn,
+                ...destinationColumn,
                 taskIds: finishTaskIDs,
             }
 
             const newState = {
-                ...kanbanData,
+                ...clientKanbanData,
                 columns: {
-                    ...kanbanData.columns,
-                    [startColumn.id]: newStart,
-                    [endColumn.id]: newFinish,
+                    ...clientKanbanData.columns,
+                    [sourceColumn.id]: newStart,
+                    [destinationColumn.id]: newFinish,
                 },
             }
-
-            setKanbanData(newState)
-
+            setClientKanbanData(newState)
             setColumn({ taskIds: startTaskIDs }, user.uid, boardId, newStart.id)
             setColumn({ taskIds: finishTaskIDs }, user.uid, boardId, newFinish.id)
         } else {
-            const newColumnOrder = Array.from(kanbanData.columnOrder)
+            const newColumnOrder = Array.from(clientKanbanData.columnOrder)
             newColumnOrder.splice(source.index, 1)
             newColumnOrder.splice(destination.index, 0, draggableId)
-            setKanbanData({ ...kanbanData, columnOrder: newColumnOrder })
-
             setColumn({ order: newColumnOrder }, user.uid, boardId, '__columnOrder')
         }
     }
@@ -163,7 +135,7 @@ export default function BoardView({ boardId }) {
                         <span className="">/</span>
                         <input
                             type="text"
-                            defaultValue={boardName}
+                            defaultValue={clientKanbanData?.boardName}
                             className="ml-2  truncate"
                             onChange={(e) => setBoardName({ name: e.target.value }, user.uid, boardId)}
                         />
@@ -211,15 +183,15 @@ export default function BoardView({ boardId }) {
                                 ref={provided.innerRef}
                                 className=" mx-1 grid  auto-cols-[270px] grid-flow-col items-start overflow-x-auto py-4 pt-3 md:mx-6 md:pt-2"
                             >
-                                {kanbanData?.columnOrder.map((col, i) => {
-                                    const column = kanbanData?.columns[col]
+                                {clientKanbanData?.columnOrder.map((col, i) => {
+                                    const column = clientKanbanData?.columns[col]
                                     if (column) {
                                         const tasks = column?.taskIds.map((t) => t)
                                         return (
                                             <Column
                                                 column={column}
                                                 tasks={tasks}
-                                                allData={kanbanData}
+                                                allData={clientKanbanData}
                                                 key={column.id}
                                                 boardId={boardId}
                                                 userId={user.uid}
@@ -255,9 +227,12 @@ export default function BoardView({ boardId }) {
                 </DragDropContext>
             </div>
             <div className=" my-8 flex flex-col overflow-auto font-mono">
+                <div className="text-xl text-cyan-500">
+                    columnOrder: {JSON.stringify(clientKanbanData?.columnOrder, null, 4)}
+                </div>
                 <div className="text-xl text-red-500">SLUG: {boardId}</div>
-                <div className="text-xl text-blue-500">NAME: {boardName}</div>
-                <pre className=" text-sm text-green-500">OBJECT: {JSON.stringify(kanbanData, null, 4)}</pre>
+                <div className="text-xl text-blue-500">NAME: {clientKanbanData?.boardName}</div>
+                <pre className=" text-sm text-green-500">OBJECT: {JSON.stringify(clientKanbanData, null, 4)}</pre>
             </div>
         </div>
     )

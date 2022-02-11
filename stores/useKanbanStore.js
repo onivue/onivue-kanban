@@ -18,37 +18,32 @@ const useKanbanStore = create((set, get) => ({
     loading: true,
     errorMessage: null,
     setLoading: (payload) => set({ loading: payload }),
-    collectionRef: collection(db, 'kanban'),
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     boards: [],
-    boardName: [],
-    tasks: [],
-    columns: [],
-    columnOrder: [],
-    kanbanData: { columnOrder: [], columns: {}, tasks: {} },
+    kanbanData: { columnOrder: [], columns: {}, tasks: {}, bardName: '' },
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     setBoard: async (payload, id = null, userId, addColumnOrder = false) => {
         let docSnap
+        if (addColumnOrder) {
+            payload = { ...payload, columnOrder: [] }
+        }
         if (id) {
             const ref = doc(collection(db, `users/${userId}/boards`), id)
-            docSnap = await setDoc(ref, payload)
+            docSnap = await setDoc(ref, payload, { merge: true })
         } else {
             const ref = collection(db, `users/${userId}/boards`)
             docSnap = await addDoc(ref, payload)
         }
-        if (addColumnOrder) {
-            const columnOrder = { id: '__columnOrder', order: [] }
-            get().setColumn(columnOrder, userId, docSnap.id, '__columnOrder')
-        }
     },
     //?---------------------------------
-    getBoards: async (userId) => {
-        onSnapshot(collection(db, `users/${userId}/boards`), (snapshot) => {
+    getBoards: (userId) => {
+        const unsubscribe = onSnapshot(collection(db, `users/${userId}/boards`), (snapshot) => {
             // console.log(snapshot.docs.length)
             const documents = []
             snapshot.forEach((doc) => documents.push({ id: doc.id, ...doc.data() }))
             set({ boards: documents })
         })
+        return unsubscribe
     },
     //?---------------------------------
     deleteBoard: async (id, userId) => {
@@ -87,33 +82,42 @@ const useKanbanStore = create((set, get) => ({
         }
     },
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    getKanbanTasks: async (userId, boardId) => {
-        onSnapshot(collection(db, `users/${userId}/boards/${boardId}/tasks`), (snapshot) => {
-            const documents = []
-            snapshot.forEach((doc) => documents.push({ id: doc.id, ...doc.data() }))
-            set({ tasks: documents })
+    getKanbanData: (userId, boardId) => {
+        // KANBAN DETAILS
+        const unsubscribe1 = onSnapshot(doc(db, `users/${userId}/boards`, boardId), (snapshot) => {
+            set({
+                kanbanData: {
+                    ...get().kanbanData,
+                    columnOrder: snapshot.data().columnOrder,
+                    boardName: snapshot.data().name,
+                },
+            })
         })
-    },
-    getKanbanBoardName: async (userId, boardId) => {
-        const docRef = doc(db, `users/${userId}/boards`, boardId)
-        const docSnap = await getDoc(docRef)
-        set({ boardName: docSnap.data().name })
-    },
-    getKanbanColumns: async (userId, boardId) => {
-        onSnapshot(collection(db, `users/${userId}/boards/${boardId}/columns`), (snapshot) => {
-            const documents = []
-            snapshot.forEach((doc) => documents.push({ id: doc.id, ...doc.data() }))
-            set({ columns: documents })
+        // COLUMNS
+        const unsubscribe2 = onSnapshot(collection(db, `users/${userId}/boards/${boardId}/columns`), (snapshot) => {
+            const documents = {}
+            snapshot.forEach((doc) => (documents[doc.id] = { id: doc.id, ...doc.data() }))
+            // set({ columns: documents })
+            set({ kanbanData: { ...get().kanbanData, columns: documents } })
         })
+        // TASKS
+        const unsubscribe3 = onSnapshot(collection(db, `users/${userId}/boards/${boardId}/tasks`), (snapshot) => {
+            const documents = {}
+            snapshot.forEach((doc) => (documents[doc.id] = { id: doc.id, ...doc.data() }))
+            // set({ tasks: documents })
+            set({ kanbanData: { ...get().kanbanData, tasks: documents } })
+        })
+        return () => {
+            unsubscribe1()
+            unsubscribe2()
+            unsubscribe3()
+        }
     },
-    setKanbanData: (payload) => {
-        set({ kanbanData: payload })
-    },
+
     setBoardName: async (payload, userId, boardId) => {
         try {
             const ref = doc(collection(db, `users/${userId}/boards`), boardId)
-            await setDoc(ref, payload)
-            set({ boardName: payload.name })
+            await setDoc(ref, payload, { merge: true })
         } catch (err) {
             console.log(err)
         }

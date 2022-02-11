@@ -11,8 +11,14 @@ const Boards = () => {
     const user = useAuthStore((state) => state.user)
 
     useEffect(() => {
-        const unsubscribe = () => getBoards(user.uid)
-        return unsubscribe()
+        let unsubscribe
+        const getSubscribe = async () => {
+            unsubscribe = getBoards(user.uid)
+        }
+        getSubscribe()
+        return () => {
+            unsubscribe()
+        }
     }, [user.uid])
 
     const addNewBoard = (boardName, boardId) => {

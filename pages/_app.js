@@ -17,9 +17,13 @@ function MyApp({ Component, pageProps }) {
     }))
     /* MANDATORY FOR AUTH SYSTEM */
     useEffect(() => {
-        authListener()
+        let unsubscribe
+        const getSubscribe = () => {
+            unsubscribe = authListener()
+        }
+        getSubscribe()
         return () => {
-            authListener()
+            unsubscribe()
         }
     }, [])
 

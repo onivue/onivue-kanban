@@ -17,8 +17,8 @@ const useAuthStore = create((set, get) => ({
     errorMessage: null,
     setLoading: (payload) => set({ loading: payload }),
     setUser: (payload) => set({ user: payload }),
-    authListener: (router) => {
-        onAuthStateChanged(auth, (authUser) => {
+    authListener: () => {
+        const unsubscribe = onAuthStateChanged(auth, (authUser) => {
             if (authUser) {
                 // console.log('LOGGED IN', authUser)
                 set({ user: authUser })
@@ -39,6 +39,7 @@ const useAuthStore = create((set, get) => ({
                 // setTimeout(() => { set({ loading: false })}, 2000)
             }
         })
+        return unsubscribe
     },
     login: async (email, password) => {
         try {
