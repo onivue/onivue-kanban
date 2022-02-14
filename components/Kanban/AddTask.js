@@ -13,20 +13,19 @@ const AddTask = ({ boardId, userId, close, allCols }) => {
         const title = e.target.elements.newTaskTitle.value
         const priority = e.target.elements.priority.value
         const column = e.target.elements.column.value
-
-        setTask(
-            {
+        setTask({
+            type: 'create',
+            data: {
                 title,
                 priority,
                 description,
                 todos: [],
             },
-            userId,
-            boardId,
-            null,
-            column,
-            'add',
-        )
+            userId: userId,
+            boardId: boardId,
+            taskId: '',
+            columnId: column,
+        })
         close()
     }
 

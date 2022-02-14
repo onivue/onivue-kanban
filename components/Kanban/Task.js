@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
+import Modal from '../Modal/Modal'
 
 // import ChecklistProgress from './ChecklistProgress'
 // import { extractPriority } from '../utils'
@@ -33,6 +34,18 @@ const Task = ({ allData, id, index, boardId, userId, columnDetails, filterBy }) 
                     columnDetails={columnDetails}
                 />
             </Modal> */}
+            <Modal
+                modal={modal}
+                ariaText="Add a new task"
+                show={modal}
+                onClose={() => setModal(false)}
+                onCancel={() => setModal(false)}
+                // onSubmit={() => {
+                //     removeBoard(idToBeDeleted, userId)
+                // }}
+                title="Add a new task"
+                type="info"
+            ></Modal>
 
             <Draggable draggableId={id} index={index}>
                 {(provided, snapshot) => (

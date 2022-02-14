@@ -10,7 +10,7 @@ import Task from './Task'
 // import { db, firebase } from '../firebase/fbConfig'
 
 const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) => {
-    const deleteColumn = useKanbanStore((state) => state.deleteColumn)
+    const setColumn = useKanbanStore((state) => state.setColumn)
     const [modal, setModal] = useState(false)
     const [editingCol, setEditing] = useState(false)
     const colInput = useRef(null)
@@ -81,7 +81,15 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                             onClose={() => setModal(false)}
                             onCancel={() => setModal(false)}
                             onSubmit={() => {
-                                deleteColumn(userId, boardId, column.id, tasks)
+                                setColumn({
+                                    type: 'delete',
+                                    data: {},
+                                    userId: userId,
+                                    boardId: boardId,
+                                    taskId: '',
+                                    columnId: column.id,
+                                    tasks: tasks,
+                                })
                             }}
                             title="Board Delete confirmation"
                             type="warning"

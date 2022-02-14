@@ -6,24 +6,18 @@ const Boards = () => {
     const boards = useKanbanStore((state) => state.boards)
     const getBoards = useKanbanStore((state) => state.getBoards)
     const setBoard = useKanbanStore((state) => state.setBoard)
-
-    const deleteBoard = useKanbanStore((state) => state.deleteBoard)
     const user = useAuthStore((state) => state.user)
 
     useEffect(() => {
         let unsubscribe
         const getSubscribe = async () => {
-            unsubscribe = getBoards(user.uid)
+            unsubscribe = getBoards({ userId: user.uid })
         }
         getSubscribe()
         return () => {
             unsubscribe()
         }
     }, [user.uid])
-
-    const addNewBoard = (payload, boardId) => {
-        setBoard(payload, user.uid)
-    }
 
     return (
         <div className="max-w-screen-xl flex-1">
@@ -37,7 +31,32 @@ const Boards = () => {
             >
                 ADD BOARD
             </button> */}
-            <BoardList addNewBoard={addNewBoard} boards={boards} deleteBoard={deleteBoard} userId={user.uid} />
+            <BoardList
+                addNewBoard={(data) => {
+                    setBoard({
+                        type: 'create',
+                        data: data,
+                        userId: user.uid,
+                        boardId: null,
+                        taskId: null,
+                        columnId: null,
+                        tasks: [],
+                    })
+                }}
+                boards={boards}
+                deleteBoard={(boardId) => {
+                    setBoard({
+                        type: 'delete',
+                        data: null,
+                        userId: user.uid,
+                        boardId: boardId,
+                        taskId: null,
+                        columnId: null,
+                        tasks: [],
+                    })
+                }}
+                userId={user.uid}
+            />
         </div>
     )
 }

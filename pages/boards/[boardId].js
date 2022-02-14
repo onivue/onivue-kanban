@@ -32,7 +32,10 @@ export default function BoardView({ boardId }) {
     useEffect(() => {
         let unsubscribe
         const getSubscribe = async () => {
-            unsubscribe = getKanbanData(user.uid, boardId)
+            unsubscribe = getKanbanData({
+                userId: user.uid,
+                boardId: boardId,
+            })
         }
         getSubscribe()
         return () => {
@@ -78,7 +81,13 @@ export default function BoardView({ boardId }) {
                     },
                 }
                 setClientKanbanData(newState)
-                setColumn({ taskIds: newTaskIds }, user.uid, boardId, sourceColumn.id)
+                setColumn({
+                    type: 'update',
+                    data: { taskIds: newTaskIds },
+                    userId: user.uid,
+                    boardId: boardId,
+                    columnId: sourceColumn.id,
+                })
                 return
             }
 
@@ -105,8 +114,21 @@ export default function BoardView({ boardId }) {
                 },
             }
             setClientKanbanData(newState)
-            setColumn({ taskIds: startTaskIDs }, user.uid, boardId, newStart.id)
-            setColumn({ taskIds: finishTaskIDs }, user.uid, boardId, newFinish.id)
+            setColumn({
+                type: 'update',
+                data: { taskIds: startTaskIDs },
+                userId: user.uid,
+                boardId: boardId,
+                columnId: newStart.id,
+            })
+            setColumn({
+                type: 'update',
+                data: { taskIds: finishTaskIDs },
+                userId: user.uid,
+                boardId: boardId,
+                columnId: newFinish.id,
+            })
+
             return
         }
 
@@ -115,7 +137,15 @@ export default function BoardView({ boardId }) {
         newColumnOrder.splice(source.index, 1)
         newColumnOrder.splice(destination.index, 0, draggableId)
         setClientKanbanData({ ...clientKanbanData, columnOrder: newColumnOrder })
-        setBoard({ columnOrder: newColumnOrder }, user.uid, boardId, { type: 'add' })
+        setBoard({
+            type: 'update',
+            data: { columnOrder: newColumnOrder },
+            userId: user.uid,
+            boardId: boardId,
+            taskId: null,
+            columnId: null,
+            tasks: [],
+        })
     }
 
     return (
@@ -151,7 +181,17 @@ export default function BoardView({ boardId }) {
                             type="text"
                             defaultValue={clientKanbanData?.boardName}
                             className="ml-2  truncate"
-                            onChange={(e) => setBoard({ name: e.target.value }, user.uid, boardId)}
+                            onChange={(e) =>
+                                setBoard({
+                                    type: 'update',
+                                    data: { name: e.target.value },
+                                    userId: user.uid,
+                                    boardId: boardId,
+                                    taskId: null,
+                                    columnId: null,
+                                    tasks: [],
+                                })
+                            }
                         />
                     </span>
                     <div className="flex flex-wrap items-center sm:space-x-9">
@@ -217,8 +257,20 @@ export default function BoardView({ boardId }) {
                                     onSubmit={(e) => {
                                         e.preventDefault()
                                         const newColumn = e.target.elements.newCol.value
-                                        setColumn({ title: newColumn, taskIds: [] }, user.uid, boardId, newColumn)
-                                        setBoard({ columnOrder: newColumn }, user.uid, boardId, { type: 'add' })
+                                        setColumn({
+                                            type: 'update',
+                                            data: { title: newColumn, taskIds: [] },
+                                            userId: user.uid,
+                                            boardId: boardId,
+                                            columnId: newColumn,
+                                            tasks: [],
+                                        })
+                                        setBoard({
+                                            type: 'update',
+                                            data: { columnOrder: newColumn },
+                                            userId: user.uid,
+                                            boardId: boardId,
+                                        })
                                         e.target.elements.newCol.value = ''
                                     }}
                                     autoComplete="off"
@@ -240,7 +292,9 @@ export default function BoardView({ boardId }) {
             <div className=" my-8 flex flex-col overflow-auto font-mono">
                 <div className="text-xl text-red-500">SLUG: {boardId}</div>
                 <div className="text-xl text-blue-500">NAME: {clientKanbanData?.boardName}</div>
-                <pre className=" text-sm text-green-500">OBJECT: {JSON.stringify(clientKanbanData, null, 4)}</pre>
+                <pre className=" text-sm text-green-500">
+                    OBJECT: {JSON.stringify(clientKanbanData, null, 4)}
+                </pre>
             </div>
         </div>
     )

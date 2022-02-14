@@ -5,16 +5,16 @@ import Link from 'next/link'
 import Modal from '@/components/Modal/Modal'
 import { HiOutlineTrash } from 'react-icons/hi'
 
-const BoardList = ({ boards, addNewBoard, deleteBoard, userId }) => {
+const BoardList = ({ boards, addNewBoard, deleteBoard }) => {
     const [modal, setModal] = useState(false)
     const [idToBeDeleted, setId] = useState(null)
 
-    const removeBoard = (id, userId) => {
+    const removeBoard = (boardId) => {
         setModal(false)
-        deleteBoard(id, userId)
+        deleteBoard(boardId)
     }
-    const openDeleteModal = (id) => {
-        setId(id)
+    const openDeleteModal = (boardId) => {
+        setId(boardId)
         setModal(true)
     }
     const onSubmitAddNewBoard = (e) => {
@@ -30,7 +30,7 @@ const BoardList = ({ boards, addNewBoard, deleteBoard, userId }) => {
                 onClose={() => setModal(false)}
                 onCancel={() => setModal(false)}
                 onSubmit={() => {
-                    removeBoard(idToBeDeleted, userId)
+                    removeBoard(idToBeDeleted)
                 }}
                 title="Board Delete confirmation"
                 type="warning"
