@@ -19,7 +19,7 @@ const BoardList = ({ boards, addNewBoard, deleteBoard, userId }) => {
     }
     const onSubmitAddNewBoard = (e) => {
         e.preventDefault()
-        addNewBoard({ name: e.target.elements.boardName.value })
+        addNewBoard({ name: e.target.elements.boardName.value, columnOrder: [] })
         e.target.elements.boardName.value = ''
     }
 
@@ -35,9 +35,7 @@ const BoardList = ({ boards, addNewBoard, deleteBoard, userId }) => {
                 title="Board Delete confirmation"
                 type="warning"
             >
-                <h2 className="mb-2 text-xl text-gray-900 ">
-                    Are you sure you want to delete this Board?
-                </h2>
+                <h2 className="mb-2 text-xl text-gray-900 ">Are you sure you want to delete this Board?</h2>
                 <h3 className="text-base text-red-600 ">
                     All of it's data will be permanently deleted and it cannot be undone.
                 </h3>
@@ -66,9 +64,7 @@ const BoardList = ({ boards, addNewBoard, deleteBoard, userId }) => {
                                 </button>
                             </div>
                         ))}
-                        {boards.length === 0 ? (
-                            <h1 className="text-gray-700">Create a new board</h1>
-                        ) : null}
+                        {boards.length === 0 ? <h1 className="text-gray-700">Create a new board</h1> : null}
                     </div>
                 </div>
             </div>

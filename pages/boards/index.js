@@ -21,22 +21,22 @@ const Boards = () => {
         }
     }, [user.uid])
 
-    const addNewBoard = (boardName, boardId) => {
-        setBoard(boardName, null, user.uid, true)
+    const addNewBoard = (payload, boardId) => {
+        setBoard(payload, user.uid)
     }
 
     return (
         <div className="max-w-screen-xl flex-1">
-            {boards.map((item, index) => {
+            {/* {boards.map((item, index) => {
                 return <div key={item.id}>{item.id}</div>
             })}
 
             <button
-                onClick={() => setBoard({ name: new Date().valueOf() }, null, user.uid)}
+                onClick={() => setBoard({ name: new Date().valueOf() }, user.uid)}
                 className="rounded-lg bg-blue-700 px-3 py-2 text-center text-xs font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
                 ADD BOARD
-            </button>
+            </button> */}
             <BoardList addNewBoard={addNewBoard} boards={boards} deleteBoard={deleteBoard} userId={user.uid} />
         </div>
     )

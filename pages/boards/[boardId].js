@@ -1,11 +1,14 @@
+import AddTask from '@/components/Kanban/AddTask'
 import Column from '@/components/Kanban/Column'
+import Modal from '@/components/Modal/Modal'
 import useAuthStore from '@/stores/useAuthStore'
 import useKanbanStore from '@/stores/useKanbanStore'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import { DragDropContext } from 'react-beautiful-dnd'
-import shallow from 'zustand/shallow'
+import { HiPlus } from 'react-icons/hi'
+
 // This gets called on every request
 export async function getServerSideProps(context) {
     const boardId = context.params.boardId
@@ -16,18 +19,15 @@ export default function BoardView({ boardId }) {
     const [modal, setModal] = useState(false)
     const [filter, setFilter] = useState(null)
     const filters = ['high', 'medium', 'low']
-    const [initialKanbanData, setInitialKanbanData] = useState(null)
     const [clientKanbanData, setClientKanbanData] = useState(null)
 
     const user = useAuthStore((state) => state.user)
-    const { kanbanData, setBoardName, setColumn, getKanbanData } = useKanbanStore(
-        (state) => ({
-            getKanbanData: state.getKanbanData,
-            kanbanData: state.kanbanData,
-            setColumn: state.setColumn,
-        }),
-        shallow,
-    )
+    const { kanbanData, setBoard, setColumn, getKanbanData } = useKanbanStore((state) => ({
+        getKanbanData: state.getKanbanData,
+        kanbanData: state.kanbanData,
+        setColumn: state.setColumn,
+        setBoard: state.setBoard,
+    }))
 
     useEffect(() => {
         let unsubscribe
@@ -107,24 +107,38 @@ export default function BoardView({ boardId }) {
             setClientKanbanData(newState)
             setColumn({ taskIds: startTaskIDs }, user.uid, boardId, newStart.id)
             setColumn({ taskIds: finishTaskIDs }, user.uid, boardId, newFinish.id)
-        } else {
-            const newColumnOrder = Array.from(clientKanbanData.columnOrder)
-            newColumnOrder.splice(source.index, 1)
-            newColumnOrder.splice(destination.index, 0, draggableId)
-            setColumn({ order: newColumnOrder }, user.uid, boardId, '__columnOrder')
+            return
         }
+
+        // COLUMN TASK DROP HANDLE
+        const newColumnOrder = Array.from(clientKanbanData.columnOrder)
+        newColumnOrder.splice(source.index, 1)
+        newColumnOrder.splice(destination.index, 0, draggableId)
+        setClientKanbanData({ ...clientKanbanData, columnOrder: newColumnOrder })
+        setBoard({ columnOrder: newColumnOrder }, user.uid, boardId, { type: 'add' })
     }
 
     return (
         <div className="flex w-full flex-col">
-            {/* <Modal modal={modal} setModal={setModal} ariaText="Add a new task">
-                    <AddTask
-                        boardId={boardId}
-                        userId={user.uid}
-                        allCols={kanbanData.columnOrder}
-                        close={() => setModal(false)}
-                    />
-                </Modal> */}
+            <Modal
+                modal={modal}
+                ariaText="Add a new task"
+                show={modal}
+                onClose={() => setModal(false)}
+                onCancel={() => setModal(false)}
+                // onSubmit={() => {
+                //     removeBoard(idToBeDeleted, userId)
+                // }}
+                title="Add a new task"
+                type="info"
+            >
+                <AddTask
+                    boardId={boardId}
+                    userId={user.uid}
+                    allCols={kanbanData.columnOrder}
+                    close={() => setModal(false)}
+                />
+            </Modal>
 
             <div className=" bg-white py-5 text-sm ">
                 <div className="flex flex-wrap items-center justify-between">
@@ -137,7 +151,7 @@ export default function BoardView({ boardId }) {
                             type="text"
                             defaultValue={clientKanbanData?.boardName}
                             className="ml-2  truncate"
-                            onChange={(e) => setBoardName({ name: e.target.value }, user.uid, boardId)}
+                            onChange={(e) => setBoard({ name: e.target.value }, user.uid, boardId)}
                         />
                     </span>
                     <div className="flex flex-wrap items-center sm:space-x-9">
@@ -166,11 +180,8 @@ export default function BoardView({ boardId }) {
                             </div>
                         </div>
 
-                        <div
-                            className=" bottom-6 right-6 transform rounded-full   p-2 transition-all duration-300 hover:scale-110 "
-                            onClick={() => setModal(true)}
-                        >
-                            ADDICON
+                        <div className="  cursor-pointer rounded-full   p-2  " onClick={() => setModal(true)}>
+                            <HiPlus className="h-6 w-6 transition-all duration-150 hover:scale-110 hover:text-primary-400" />
                         </div>
                     </div>
                 </div>
@@ -181,12 +192,12 @@ export default function BoardView({ boardId }) {
                             <div
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
-                                className=" mx-1 grid  auto-cols-[270px] grid-flow-col items-start overflow-x-auto py-4 pt-3 md:mx-6 md:pt-2"
+                                className="mx-2 grid auto-cols-[270px] grid-flow-col items-start overflow-x-auto py-4 pt-3 md:pt-2"
                             >
                                 {clientKanbanData?.columnOrder.map((col, i) => {
                                     const column = clientKanbanData?.columns[col]
                                     if (column) {
-                                        const tasks = column?.taskIds.map((t) => t)
+                                        const tasks = column?.taskIds
                                         return (
                                             <Column
                                                 column={column}
@@ -207,7 +218,7 @@ export default function BoardView({ boardId }) {
                                         e.preventDefault()
                                         const newColumn = e.target.elements.newCol.value
                                         setColumn({ title: newColumn, taskIds: [] }, user.uid, boardId, newColumn)
-                                        setColumn({ order: newColumn }, user.uid, boardId, '__columnOrder')
+                                        setBoard({ columnOrder: newColumn }, user.uid, boardId, { type: 'add' })
                                         e.target.elements.newCol.value = ''
                                     }}
                                     autoComplete="off"
@@ -227,9 +238,6 @@ export default function BoardView({ boardId }) {
                 </DragDropContext>
             </div>
             <div className=" my-8 flex flex-col overflow-auto font-mono">
-                <div className="text-xl text-cyan-500">
-                    columnOrder: {JSON.stringify(clientKanbanData?.columnOrder, null, 4)}
-                </div>
                 <div className="text-xl text-red-500">SLUG: {boardId}</div>
                 <div className="text-xl text-blue-500">NAME: {clientKanbanData?.boardName}</div>
                 <pre className=" text-sm text-green-500">OBJECT: {JSON.stringify(clientKanbanData, null, 4)}</pre>
