@@ -19,7 +19,7 @@ const BoardList = ({ boards, addNewBoard, deleteBoard }) => {
     }
     const onSubmitAddNewBoard = (e) => {
         e.preventDefault()
-        addNewBoard({ name: e.target.elements.boardName.value, columnOrder: [] })
+        addNewBoard({ title: e.target.elements.boardName.value, columnOrder: [] })
         e.target.elements.boardName.value = ''
     }
 
@@ -52,7 +52,7 @@ const BoardList = ({ boards, addNewBoard, deleteBoard }) => {
                                 <Link href={`/boards/${b.id}`}>
                                     <a className="flex items-center justify-between ">
                                         <h2 className="text-lg text-gray-700 hover:text-gray-900 sm:text-2xl">
-                                            {b.name}
+                                            {b.title}
                                         </h2>
                                     </a>
                                 </Link>

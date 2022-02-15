@@ -14,6 +14,12 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
     const [modal, setModal] = useState(false)
     const [editingCol, setEditing] = useState(false)
     const colInput = useRef(null)
+    const focusInput = () => {
+        setEditing(true)
+        setTimeout(() => {
+            colInput.current.focus()
+        }, 50)
+    }
 
     return (
         <>
@@ -27,19 +33,27 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                             >
                                 <input
                                     ref={colInput}
-                                    className={`w-10/12 px-2 text-lg text-primary-700 sm:text-xl ${
+                                    className={` w-10/12 px-2 text-lg text-primary-700 ${
                                         editingCol ? '' : 'hidden'
                                     }`}
-                                    onBlur={() => setEditing(false)}
                                     type="text"
-                                    defaultValue={column.title}
-                                    onChange={(e) => changeColName(e, column.id)}
+                                    onBlur={() => setEditing(false)}
+                                    value={column.title}
+                                    onChange={(e) =>
+                                        setColumn({
+                                            type: 'update',
+                                            data: { title: e.target.value },
+                                            userId: userId,
+                                            boardId: boardId,
+                                            columnId: column.id,
+                                        })
+                                    }
                                 />
                                 <h2
-                                    className={`truncate text-lg text-primary-100 sm:text-lg ${
+                                    className={`truncate text-lg text-primary-100  ${
                                         editingCol ? 'hidden' : ''
                                     }`}
-                                    // onClick={moveToInp}
+                                    onClick={focusInput}
                                 >
                                     {column.title}
                                 </h2>
@@ -83,10 +97,8 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                             onSubmit={() => {
                                 setColumn({
                                     type: 'delete',
-                                    data: {},
                                     userId: userId,
                                     boardId: boardId,
-                                    taskId: '',
                                     columnId: column.id,
                                     tasks: tasks,
                                 })

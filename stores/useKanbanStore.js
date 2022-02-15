@@ -29,9 +29,6 @@ const useKanbanStore = create((set, get) => ({
             data: {},
             userId: '',
             boardId: '',
-            taskId: null,
-            columnId: null,
-            tasks: [],
         },
     ) => {
         const col = collection(db, `users/${payload.userId}/boards`)
@@ -45,6 +42,21 @@ const useKanbanStore = create((set, get) => ({
             await setDoc(doc(col, payload.boardId), payload.data, { merge: true })
         }
         if (payload.type === 'delete') {
+            // DELETE ALL COLUMNS FROM BOARD
+            const columns = await getDocs(
+                collection(db, `users/${payload.userId}/boards/${payload.boardId}/columns`),
+            )
+            columns.forEach(async (doc) => {
+                await deleteDoc(doc.ref)
+            })
+            // DELETE ALL TASKS FROM BOARD
+            const tasks = await getDocs(
+                collection(db, `users/${payload.userId}/boards/${payload.boardId}/tasks`),
+            )
+            tasks.forEach(async (doc) => {
+                await deleteDoc(doc.ref)
+            })
+            // DELETE BOARD
             await deleteDoc(doc(col, payload.boardId))
         }
     },
@@ -72,7 +84,7 @@ const useKanbanStore = create((set, get) => ({
                         kanbanData: {
                             ...get().kanbanData,
                             columnOrder: snapshot.data().columnOrder,
-                            boardName: snapshot.data().name,
+                            boardName: snapshot.data().title,
                         },
                     })
             },
@@ -105,9 +117,7 @@ const useKanbanStore = create((set, get) => ({
     },
 
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    setColumn: async (
-        payload = { type: '', data: {}, userId: '', boardId: '', taskId: '', columnId: '', tasks: [] },
-    ) => {
+    setColumn: async (payload = { type: '', data: {}, userId: '', boardId: '', columnId: '', tasks: [] }) => {
         const col = collection(db, `users/${payload.userId}/boards/${payload.boardId}/columns`)
         if (payload.type === 'create') {
             await addDoc(col, payload.data)
@@ -126,7 +136,7 @@ const useKanbanStore = create((set, get) => ({
                 columnId: null,
                 tasks: [],
             })
-            // DELETE DOC
+            // DELETE COLUMN
             await deleteDoc(doc(col, payload.columnId))
             // DELETE TASKS
             payload.tasks.forEach(async (task) => {
@@ -148,7 +158,6 @@ const useKanbanStore = create((set, get) => ({
     ) => {
         const col = collection(db, `users/${payload.userId}/boards/${payload.boardId}/tasks`)
         if (payload.type === 'create') {
-            await addDoc(col, payload.data)
             payload.data.dateAdded = serverTimestamp()
             const createdDoc = await addDoc(col, payload.data)
             get().setColumn({

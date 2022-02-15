@@ -184,7 +184,7 @@ export default function BoardView({ boardId }) {
                             onChange={(e) =>
                                 setBoard({
                                     type: 'update',
-                                    data: { name: e.target.value },
+                                    data: { title: e.target.value },
                                     userId: user.uid,
                                     boardId: boardId,
                                     taskId: null,

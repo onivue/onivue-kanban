@@ -25,15 +25,7 @@ const Task = ({ allData, id, index, boardId, userId, columnDetails, filterBy }) 
     return (
         <div className={`${matched ? '' : 'opacity-10'}`}>
             {/* // TODO MODAL */}
-            {/* <Modal modal={modal} setModal={setModal} ariaText="Task Details">
-                <TaskDetails
-                    taskDetails={theTask}
-                    closeModal={() => setModal(false)}
-                    boardId={boardId}
-                    userId={userId}
-                    columnDetails={columnDetails}
-                />
-            </Modal> */}
+
             <Modal
                 modal={modal}
                 ariaText="Add a new task"
@@ -43,9 +35,17 @@ const Task = ({ allData, id, index, boardId, userId, columnDetails, filterBy }) 
                 // onSubmit={() => {
                 //     removeBoard(idToBeDeleted, userId)
                 // }}
-                title="Add a new task"
+                title="Task Details"
                 type="info"
-            ></Modal>
+            >
+                {/* <TaskDetails
+                    taskDetails={theTask}
+                    closeModal={() => setModal(false)}
+                    boardId={boardId}
+                    userId={userId}
+                    columnDetails={columnDetails}
+                /> */}
+            </Modal>
 
             <Draggable draggableId={id} index={index}>
                 {(provided, snapshot) => (
