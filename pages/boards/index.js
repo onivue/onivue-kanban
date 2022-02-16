@@ -4,6 +4,7 @@ import useAuthStore from '@/stores/useAuthStore'
 import BoardList from '@/components/Kanban/BoardList'
 const Boards = () => {
     const boards = useKanbanStore((state) => state.boards)
+    const boardsShared = useKanbanStore((state) => state.boardsShared)
     const getBoards = useKanbanStore((state) => state.getBoards)
     const setBoard = useKanbanStore((state) => state.setBoard)
     const user = useAuthStore((state) => state.user)
@@ -44,6 +45,7 @@ const Boards = () => {
                     })
                 }}
                 boards={boards}
+                boardsShared={boardsShared}
                 deleteBoard={(boardId) => {
                     setBoard({
                         type: 'delete',

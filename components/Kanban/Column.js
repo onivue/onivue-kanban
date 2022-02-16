@@ -33,7 +33,7 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                             >
                                 <input
                                     ref={colInput}
-                                    className={` w-10/12 px-2 text-lg text-primary-700 ${
+                                    className={` w-10/12 px-2 text-lg text-primary-700  ${
                                         editingCol ? '' : 'hidden'
                                     }`}
                                     type="text"

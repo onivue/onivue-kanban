@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Modal from '@/components/Modal/Modal'
 import { HiOutlineTrash } from 'react-icons/hi'
 
-const BoardList = ({ boards, addNewBoard, deleteBoard }) => {
+const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard }) => {
     const [modal, setModal] = useState(false)
     const [idToBeDeleted, setId] = useState(null)
 
@@ -45,6 +45,32 @@ const BoardList = ({ boards, addNewBoard, deleteBoard }) => {
                     <h1 className="text-xl text-blue-900">Your Boards</h1>
                     <div className="mt-2 flex flex-wrap">
                         {boards.map((b) => (
+                            <div
+                                className="mb-3 mr-4 flex w-full items-center justify-between rounded-lg bg-white py-4 px-6 shadow-md sm:w-auto"
+                                key={b.id}
+                            >
+                                <Link href={`/boards/${b.id}`}>
+                                    <a className="flex items-center justify-between ">
+                                        <h2 className="text-lg text-gray-700 hover:text-gray-900 sm:text-2xl">
+                                            {b.title}
+                                        </h2>
+                                    </a>
+                                </Link>
+                                <button
+                                    onClick={() => openDeleteModal(b.id)}
+                                    className="ml-6 cursor-pointer text-red-500 hover:text-red-700"
+                                >
+                                    <HiOutlineTrash />
+                                </button>
+                            </div>
+                        ))}
+                        {boards.length === 0 ? <h1 className="text-gray-700">Create a new board</h1> : null}
+                    </div>
+                </div>
+                <div className="my-6">
+                    <h1 className="text-xl text-blue-900">Shared Boards</h1>
+                    <div className="mt-2 flex flex-wrap">
+                        {boardsShared.map((b) => (
                             <div
                                 className="mb-3 mr-4 flex w-full items-center justify-between rounded-lg bg-white py-4 px-6 shadow-md sm:w-auto"
                                 key={b.id}

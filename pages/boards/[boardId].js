@@ -44,10 +44,9 @@ export default function BoardView({ boardId }) {
     }, [user.uid, boardId])
 
     useEffect(() => {
-        const finalObject = kanbanData
         //MINI DEBOUNCE FOR FIXING WEIRD HANDLING
         const handler = setTimeout(() => {
-            setClientKanbanData(finalObject)
+            setClientKanbanData(kanbanData)
         }, 10)
         return () => {
             clearTimeout(handler)
@@ -179,7 +178,7 @@ export default function BoardView({ boardId }) {
                         <span className="">/</span>
                         <input
                             type="text"
-                            defaultValue={clientKanbanData?.boardName}
+                            defaultValue={clientKanbanData?.boardData.title}
                             className="ml-2  truncate"
                             onChange={(e) =>
                                 setBoard({
@@ -290,9 +289,9 @@ export default function BoardView({ boardId }) {
                 </DragDropContext>
             </div>
             <div className=" my-8 flex flex-col overflow-auto font-mono">
-                <div className="text-xl text-red-500">SLUG: {boardId}</div>
-                <div className="text-xl text-blue-500">NAME: {clientKanbanData?.boardName}</div>
-                <pre className=" text-sm text-green-500">
+                <div className="text-lg text-primary-500">NAME: {clientKanbanData?.boardData.title}</div>
+                <div className="text-lg text-primary-500">BOARD ID: {boardId}</div>
+                <pre className=" text-sm text-primary-500">
                     OBJECT: {JSON.stringify(clientKanbanData, null, 4)}
                 </pre>
             </div>

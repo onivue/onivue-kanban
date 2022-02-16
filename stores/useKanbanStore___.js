@@ -13,8 +13,6 @@ import {
     arrayUnion,
     arrayRemove,
     serverTimestamp,
-    where,
-    orderBy,
 } from 'firebase/firestore'
 
 const useKanbanStore = create((set, get) => ({
@@ -23,8 +21,7 @@ const useKanbanStore = create((set, get) => ({
     setLoading: (payload) => set({ loading: payload }),
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     boards: [],
-    boardsShared: [],
-    kanbanData: { columnOrder: [], columns: {}, tasks: {}, boardData: {} },
+    kanbanData: { columnOrder: [], columns: {}, tasks: {}, bardName: '' },
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     setBoard: async (
         payload = {
@@ -34,9 +31,9 @@ const useKanbanStore = create((set, get) => ({
             boardId: '',
         },
     ) => {
-        const col = collection(db, `boards`)
+        const col = collection(db, `users/${payload.userId}/boards`)
         if (payload.type === 'create') {
-            await addDoc(col, { ...payload.data, owner: payload.userId, members: [] })
+            await addDoc(col, payload.data)
         }
         if (payload.type === 'update') {
             if (payload.data.columnOrder && typeof payload.data.columnOrder === 'string') {
@@ -46,12 +43,16 @@ const useKanbanStore = create((set, get) => ({
         }
         if (payload.type === 'delete') {
             // DELETE ALL COLUMNS FROM BOARD
-            const columns = await getDocs(collection(db, `boards/${payload.boardId}/columns`))
+            const columns = await getDocs(
+                collection(db, `users/${payload.userId}/boards/${payload.boardId}/columns`),
+            )
             columns.forEach(async (doc) => {
                 await deleteDoc(doc.ref)
             })
             // DELETE ALL TASKS FROM BOARD
-            const tasks = await getDocs(collection(db, `boards/${payload.boardId}/tasks`))
+            const tasks = await getDocs(
+                collection(db, `users/${payload.userId}/boards/${payload.boardId}/tasks`),
+            )
             tasks.forEach(async (doc) => {
                 await deleteDoc(doc.ref)
             })
@@ -65,64 +66,49 @@ const useKanbanStore = create((set, get) => ({
             userId: '',
         },
     ) => {
-        const unsubscribe1 = onSnapshot(
-            query(
-                collection(db, `boards`),
-                where('owner', '==', payload.userId),
-                // where('members', 'array-contains', payload.userId),
-                // orderBy('title', 'asc'),
-            ),
-            (snapshot) => {
-                const documents = []
-                snapshot.forEach((doc) => documents.push({ id: doc.id, ...doc.data() }))
-                set({ boards: documents })
-            },
-        )
-        const unsubscribe2 = onSnapshot(
-            query(
-                collection(db, `boards`),
-                // where('owner', '==', payload.userId),
-                where('members', 'array-contains', payload.userId),
-                // orderBy('title', 'asc'),
-            ),
-            (snapshot) => {
-                const documents = []
-                snapshot.forEach((doc) => documents.push({ id: doc.id, ...doc.data() }))
-                set({ boardsShared: documents })
-            },
-        )
-        return () => {
-            unsubscribe1()
-            unsubscribe2()
-        }
+        const unsubscribe = onSnapshot(collection(db, `users/${payload.userId}/boards`), (snapshot) => {
+            const documents = []
+            snapshot.forEach((doc) => documents.push({ id: doc.id, ...doc.data() }))
+            set({ boards: documents })
+        })
+        return unsubscribe
     },
     //?---------------------------------
     getKanbanData: (payload = { userId: '', boardId: '' }) => {
         // KANBAN DETAILS
-        const unsubscribe1 = onSnapshot(doc(db, `boards`, payload.boardId), (snapshot) => {
-            if (snapshot.data())
-                set({
-                    kanbanData: {
-                        ...get().kanbanData,
-                        columnOrder: snapshot.data().columnOrder,
-                        boardData: snapshot.data(),
-                    },
-                })
-        })
+        const unsubscribe1 = onSnapshot(
+            doc(db, `users/${payload.userId}/boards`, payload.boardId),
+            (snapshot) => {
+                if (snapshot.data())
+                    set({
+                        kanbanData: {
+                            ...get().kanbanData,
+                            columnOrder: snapshot.data().columnOrder,
+                            boardName: snapshot.data().title,
+                        },
+                    })
+            },
+        )
         // COLUMNS
-        const unsubscribe2 = onSnapshot(collection(db, `boards/${payload.boardId}/columns`), (snapshot) => {
-            const documents = {}
-            snapshot.forEach((doc) => (documents[doc.id] = { id: doc.id, ...doc.data() }))
-            // set({ columns: documents })
-            set({ kanbanData: { ...get().kanbanData, columns: documents } })
-        })
+        const unsubscribe2 = onSnapshot(
+            collection(db, `users/${payload.userId}/boards/${payload.boardId}/columns`),
+            (snapshot) => {
+                const documents = {}
+                snapshot.forEach((doc) => (documents[doc.id] = { id: doc.id, ...doc.data() }))
+                // set({ columns: documents })
+                set({ kanbanData: { ...get().kanbanData, columns: documents } })
+            },
+        )
         // TASKS
-        const unsubscribe3 = onSnapshot(collection(db, `boards/${payload.boardId}/tasks`), (snapshot) => {
-            const documents = {}
-            snapshot.forEach((doc) => (documents[doc.id] = { id: doc.id, ...doc.data() }))
-            // set({ tasks: documents })
-            set({ kanbanData: { ...get().kanbanData, tasks: documents } })
-        })
+        const unsubscribe3 = onSnapshot(
+            collection(db, `users/${payload.userId}/boards/${payload.boardId}/tasks`),
+            (snapshot) => {
+                const documents = {}
+                snapshot.forEach((doc) => (documents[doc.id] = { id: doc.id, ...doc.data() }))
+                // set({ tasks: documents })
+                set({ kanbanData: { ...get().kanbanData, tasks: documents } })
+            },
+        )
         return () => {
             unsubscribe1()
             unsubscribe2()
@@ -132,7 +118,7 @@ const useKanbanStore = create((set, get) => ({
 
     //!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     setColumn: async (payload = { type: '', data: {}, userId: '', boardId: '', columnId: '', tasks: [] }) => {
-        const col = collection(db, `boards/${payload.boardId}/columns`)
+        const col = collection(db, `users/${payload.userId}/boards/${payload.boardId}/columns`)
         if (payload.type === 'create') {
             await addDoc(col, payload.data)
         }
@@ -154,7 +140,7 @@ const useKanbanStore = create((set, get) => ({
             await deleteDoc(doc(col, payload.columnId))
             // DELETE TASKS
             payload.tasks.forEach(async (task) => {
-                const ref = doc(db, `boards/${payload.boardId}/tasks`, task)
+                const ref = doc(db, `users/${payload.userId}/boards/${payload.boardId}/tasks`, task)
                 await deleteDoc(ref)
             })
         }
@@ -170,7 +156,7 @@ const useKanbanStore = create((set, get) => ({
             columnId: '',
         },
     ) => {
-        const col = collection(db, `boards/${payload.boardId}/tasks`)
+        const col = collection(db, `users/${payload.userId}/boards/${payload.boardId}/tasks`)
         if (payload.type === 'create') {
             payload.data.dateAdded = serverTimestamp()
             const createdDoc = await addDoc(col, payload.data)

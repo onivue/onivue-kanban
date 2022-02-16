@@ -8,15 +8,7 @@ import {
     HiX,
 } from 'react-icons/hi'
 import classNames from 'classnames'
-export default function Modal({
-    show,
-    onClose,
-    onCancel,
-    onSubmit,
-    title,
-    children,
-    type = 'info',
-}) {
+export default function Modal({ show, onClose, onCancel, onSubmit, title, children, type = 'info' }) {
     const closeButtonRef = useRef(null)
     return (
         <>

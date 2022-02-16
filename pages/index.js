@@ -15,17 +15,25 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
+            <Link href="/boards">
+                <a className="">
+                    <img src="img/tasks.svg" alt="" />
+                </a>
+            </Link>
+
             {user && (
                 <>
+                    <div className="flex w-full flex-1 flex-col items-center justify-center px-10 text-center">
+                        <h1 className="w-full break-all text-3xl font-bold">
+                            {JSON.stringify(user.displayName)}
+                        </h1>
+                    </div>
                     <button
                         onClick={() => logout()}
                         className="rounded-lg bg-blue-700 px-3 py-2 text-center text-xs font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                     >
                         LOGOUT
                     </button>
-                    <div className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-                        <h1 className="w-full break-all text-6xl font-bold">{JSON.stringify(user.email)}</h1>
-                    </div>
                 </>
             )}
 

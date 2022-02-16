@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
 import Modal from '../Modal/Modal'
+import TaskDetails from './TaskDetails'
 
 // import ChecklistProgress from './ChecklistProgress'
 // import { extractPriority } from '../utils'
@@ -26,26 +27,21 @@ const Task = ({ allData, id, index, boardId, userId, columnDetails, filterBy }) 
         <div className={`${matched ? '' : 'opacity-10'}`}>
             {/* // TODO MODAL */}
 
-            <Modal
-                modal={modal}
-                ariaText="Add a new task"
-                show={modal}
-                onClose={() => setModal(false)}
-                onCancel={() => setModal(false)}
-                // onSubmit={() => {
-                //     removeBoard(idToBeDeleted, userId)
-                // }}
-                title="Task Details"
-                type="info"
-            >
-                {/* <TaskDetails
-                    taskDetails={theTask}
-                    closeModal={() => setModal(false)}
-                    boardId={boardId}
-                    userId={userId}
-                    columnDetails={columnDetails}
-                /> */}
-            </Modal>
+            <TaskDetails
+                modal={{
+                    onClose: () => setModal(false),
+                    onCancel: () => setModal(false),
+                    // onSubmit: () => {},
+                    title: 'Task Details',
+                    type: 'edit',
+                    show: modal,
+                }}
+                taskDetails={theTask}
+                closeModal={() => setModal(false)}
+                boardId={boardId}
+                userId={userId}
+                columnDetails={columnDetails}
+            />
 
             <Draggable draggableId={id} index={index}>
                 {(provided, snapshot) => (

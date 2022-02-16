@@ -53,10 +53,10 @@ const Header = ({ className }) => {
     return (
         <nav
             className={classNames(
-                'dark:bg-dark-100 fixed inset-0 z-10 h-[60px] bg-white bg-opacity-80 backdrop-blur-sm backdrop-filter  duration-300     ',
+                'fixed inset-0 z-10 h-[60px] bg-white bg-opacity-80 backdrop-blur-sm backdrop-filter duration-300  dark:bg-dark-100     ',
                 visible
-                    ? 'border-primary-200 top-0 border-b'
-                    : 'border-primary-200 -top-[55px] rounded-lg border-b-[5px] border-opacity-100',
+                    ? 'top-0 border-b border-primary-200'
+                    : '-top-[55px] rounded-lg border-b-[5px] border-primary-200 border-opacity-100',
             )}
         >
             {isClient && (
@@ -76,14 +76,23 @@ const Header = ({ className }) => {
                                     <HiSun className="h-6 w-6" />
                                 )}
                             </button> */}
-                            <div className="divide-primary-200 flex items-center divide-x-2 text-sm">
+                            <div className="flex items-center divide-x-2 divide-primary-200 text-sm">
                                 <Link href="/">
                                     <a
-                                        className={`hover:text-primary-500 px-2 ${
+                                        className={`px-2 hover:text-primary-500 ${
                                             router.pathname === '/' && 'text-primary-500'
                                         }`}
                                     >
                                         home
+                                    </a>
+                                </Link>
+                                <Link href="/boards">
+                                    <a
+                                        className={`px-2 hover:text-primary-500 ${
+                                            router.pathname === '/boards' && 'text-primary-500'
+                                        }`}
+                                    >
+                                        boards
                                     </a>
                                 </Link>
                             </div>
