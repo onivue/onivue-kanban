@@ -159,7 +159,7 @@ export default function BoardView({ boardId }) {
                 //     removeBoard(idToBeDeleted, userId)
                 // }}
                 title="Add a new task"
-                type="info"
+                type="edit"
             >
                 <AddTask
                     boardId={boardId}

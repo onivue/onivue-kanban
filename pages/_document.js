@@ -8,15 +8,18 @@ class MyDocument extends Document {
         return (
             <Html>
                 <Head>
-                    <meta name="apple-mobile-web-app-title" content={APP_NAME} />
-                    <meta name="description" content={APP_DESCRIPTION} />
-                    <meta name="application-name" content="onivue." />
-                    <meta name="theme-color" content="#a3e635" />
                     <meta charSet="utf-8" />
-                    {/* <link rel="manifest" href="/manifest.json" />
-                    <link rel="shortcut icon" href="/icons/favicon.ico" /> */}
+                    <meta name="apple-mobile-web-app-title" content={APP_NAME} />
+                    <meta name="application-name" content={APP_NAME} />
+                    <meta name="description" content={APP_DESCRIPTION} />
+                    <meta name="theme-color" content="#f9e288" />
+                    {/* <link rel="manifest" href="/manifest.json" /> */}
+                    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+                    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+                    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+                    <link rel="shortcut icon" href="/icons/favicon.ico" />
                 </Head>
-                <body className="bg-gray-100 text-gray-900 antialiased selection:bg-green-200">
+                <body className="bg-gray-50  text-gray-900 antialiased selection:bg-primary-200 dark:bg-dark-200 dark:text-white ">
                     <Main />
                     <NextScript />
                 </body>

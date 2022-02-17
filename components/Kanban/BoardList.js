@@ -4,6 +4,7 @@ import Link from 'next/link'
 
 import Modal from '@/components/Modal/Modal'
 import { HiOutlineTrash } from 'react-icons/hi'
+import Button from '../Button/Button'
 
 const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard }) => {
     const [modal, setModal] = useState(false)
@@ -24,7 +25,7 @@ const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard })
     }
 
     return (
-        <div className="h-screen bg-primary-100 px-6 py-4">
+        <div className=" px-6 py-4">
             <Modal
                 show={modal}
                 onClose={() => setModal(false)}
@@ -42,7 +43,7 @@ const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard })
             </Modal>
             <div className="my-2 flex flex-col">
                 <div className="my-6">
-                    <h1 className="text-xl text-blue-900">Your Boards</h1>
+                    <h1 className="text-xl text-primary-500">Your Boards</h1>
                     <div className="mt-2 flex flex-wrap">
                         {boards.map((b) => (
                             <div
@@ -51,9 +52,7 @@ const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard })
                             >
                                 <Link href={`/boards/${b.id}`}>
                                     <a className="flex items-center justify-between ">
-                                        <h2 className="text-lg text-gray-700 hover:text-gray-900 sm:text-2xl">
-                                            {b.title}
-                                        </h2>
+                                        <h2 className="text-lg   sm:text-2xl">{b.title}</h2>
                                     </a>
                                 </Link>
                                 <button
@@ -64,11 +63,11 @@ const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard })
                                 </button>
                             </div>
                         ))}
-                        {boards.length === 0 ? <h1 className="text-gray-700">Create a new board</h1> : null}
+                        {boards.length === 0 ? <h1 className="">Create a new board</h1> : null}
                     </div>
                 </div>
                 <div className="my-6">
-                    <h1 className="text-xl text-blue-900">Shared Boards</h1>
+                    <h1 className="text-xl text-primary-500">Shared Boards</h1>
                     <div className="mt-2 flex flex-wrap">
                         {boardsShared.map((b) => (
                             <div
@@ -77,9 +76,7 @@ const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard })
                             >
                                 <Link href={`/boards/${b.id}`}>
                                     <a className="flex items-center justify-between ">
-                                        <h2 className="text-lg text-gray-700 hover:text-gray-900 sm:text-2xl">
-                                            {b.title}
-                                        </h2>
+                                        <h2 className="text-lg   sm:text-2xl">{b.title}</h2>
                                     </a>
                                 </Link>
                                 <button
@@ -90,12 +87,12 @@ const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard })
                                 </button>
                             </div>
                         ))}
-                        {boards.length === 0 ? <h1 className="text-gray-700">Create a new board</h1> : null}
+                        {boards.length === 0 ? <h1 className="">Create a new board</h1> : null}
                     </div>
                 </div>
             </div>
             <form onSubmit={onSubmitAddNewBoard} autoComplete="off" className="my-4 sm:my-8">
-                <label htmlFor="boardName" className="block text-xl text-blue-900">
+                <label htmlFor="boardName" className="block text-xl text-primary-500">
                     Make a new board
                 </label>
                 <div className="mt-2 flex items-center">
@@ -103,15 +100,15 @@ const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard })
                         required
                         type="text"
                         name="boardName"
-                        className="rounded-sm border border-gray-500 bg-transparent px-2 py-1 placeholder-gray-700"
+                        className="mr-3  rounded-sm bg-transparent px-2 py-1 placeholder-gray-700"
                         placeholder="Enter a board name"
                     />
-                    <button
+                    <Button
                         type="submit"
-                        className="rounded-sm bg-green-600 px-2  py-1.5 text-green-50 hover:bg-green-900"
+                        className=" bg-primary-600 px-2  py-1.5 text-green-50 hover:bg-green-900"
                     >
                         Add
-                    </button>
+                    </Button>
                 </div>
             </form>
         </div>

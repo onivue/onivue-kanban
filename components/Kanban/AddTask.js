@@ -41,7 +41,7 @@ const AddTask = ({ boardId, userId, close, allCols }) => {
                         required
                         type="text"
                         name="newTaskTitle"
-                        className="w-3/4 rounded-lg  border-b bg-transparent text-lg font-bold outline-none md:text-2xl"
+                        className=" rounded-lg  border-2  py-1 px-2 text-lg font-bold outline-none md:text-2xl"
                     />
                 </div>
 
