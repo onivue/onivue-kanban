@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import useAuthStore from '@/stores/useAuthStore'
+import Button from '@/components/Button/Button'
 
 const LoginForm = () => {
     const [email, setEmail] = useState('')
@@ -9,10 +10,10 @@ const LoginForm = () => {
 
     return (
         <div className="flex w-full flex-1 items-center justify-center">
-            <div className="w-full max-w-md rounded-lg bg-white px-8 py-12">
-                <form className="mt-8 space-y-6" action="#" method="POST">
+            <div className=" w-full max-w-md  rounded-lg bg-white px-8 py-12">
+                <form className="flex flex-col justify-around space-y-6">
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="email" className="block text-sm font-medium ">
                             Email address
                         </label>
                         <div className="mt-1">
@@ -23,16 +24,13 @@ const LoginForm = () => {
                                 name="email"
                                 type="email"
                                 required
-                                className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 "
+                                className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 "
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label
-                            htmlFor="password"
-                            className="block text-sm font-medium text-gray-700"
-                        >
+                        <label htmlFor="password" className="block text-sm font-medium ">
                             Password
                         </label>
                         <div className="mt-1">
@@ -43,7 +41,7 @@ const LoginForm = () => {
                                 name="password"
                                 type="password"
                                 required
-                                className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 "
+                                className="block w-full appearance-none rounded-md border px-3 py-2 placeholder-gray-400 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 "
                             />
                         </div>
                     </div>
@@ -54,19 +52,17 @@ const LoginForm = () => {
                         </div>
                     )}
 
-                    <div>
-                        <button
-                            label="Sign in"
-                            className="rounded-full bg-green-500 px-8 py-3 text-center text-xl text-white shadow-lg shadow-green-500"
-                            // loading={loading}
-                            onClick={async (e) => {
-                                e.preventDefault()
-                                login(email, password)
-                            }}
-                        >
-                            LOGIN
-                        </button>
-                    </div>
+                    <Button
+                        label="login"
+                        className="w-full"
+                        // loading={loading}
+                        onClick={async (e) => {
+                            e.preventDefault()
+                            login(email, password)
+                        }}
+                    >
+                        LOGIN
+                    </Button>
                 </form>
             </div>
         </div>

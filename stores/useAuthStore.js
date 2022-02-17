@@ -33,22 +33,16 @@ const useAuthStore = create((set, get) => ({
                 //         setLoading(false)
                 //     })
             } else {
-                // console.log('NO')
                 set({ user: null })
                 set({ loading: false })
-                // setTimeout(() => { set({ loading: false })}, 2000)
             }
         })
         return unsubscribe
     },
     login: async (email, password) => {
         try {
-            set({ loading: true })
             await signInWithEmailAndPassword(auth, email, password)
-            set({ loading: false })
         } catch (err) {
-            // console.log(err.code)
-            // console.log(err.message)
             if (err.code === 'auth/wrong-password') {
                 set({ errorMessage: 'Please check the Password' })
             }
@@ -58,7 +52,6 @@ const useAuthStore = create((set, get) => ({
             if (err.code === 'auth/invalid-email') {
                 set({ errorMessage: 'Please check the Email' })
             }
-            set({ loading: false })
         }
     },
     logout: async () => {

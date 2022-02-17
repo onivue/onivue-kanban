@@ -47,15 +47,15 @@ function MyApp({ Component, pageProps }) {
     return (
         <>
             <Header />
-            <div className="flex min-h-screen  flex-col pt-[60px]">
+            <div className="flex min-h-screen  flex-col items-center justify-center pt-[60px]">
                 <main className="flex w-full max-w-[1900px]  flex-1 justify-center  lg:flex-row ">
-                    {!user &&
-                    !loading &&
-                    router.pathname !== '/auth/register' &&
+                    {router.pathname !== '/auth/register' &&
                     router.pathname !== '/auth/resetpassword' &&
                     router.pathname !== '/auth/login' &&
                     router.pathname !== '/' &&
-                    router.pathname !== '/_error' ? (
+                    router.pathname !== '/_error' &&
+                    !user &&
+                    !loading ? (
                         <div className="flex flex-col self-center ">
                             <Link href="/auth/login">
                                 <a className="rounded-lg bg-blue-700 px-3 py-2 text-center text-xs font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
