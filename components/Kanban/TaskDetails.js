@@ -5,6 +5,7 @@ import gfm from 'remark-gfm'
 
 import useKanbanStore from '@/stores/useKanbanStore'
 import Modal from '../Modal/Modal'
+import { HiOutlineTrash } from 'react-icons/hi'
 
 const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => {
     const setTask = useKanbanStore((state) => state.setTask)
@@ -59,10 +60,10 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                     })
                 })
             }
-            title="Task Delete confirmation"
+            title={modal.title}
             type={modal.type}
         >
-            <div className="text-sm md:px-12 md:text-base">
+            <div className="">
                 <Modal
                     show={deletionModal}
                     onClose={() => setDeletionModal(false)}
@@ -80,7 +81,7 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                 </Modal>
 
                 <form autoComplete="off">
-                    <div>
+                    <div className="rounded-lg bg-gray-100 p-4">
                         <label
                             className="block text-xs uppercase tracking-wide text-gray-500  sm:text-sm"
                             htmlFor="title"
@@ -91,74 +92,53 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                             maxLength="45"
                             type="text"
                             name="title"
-                            className="block w-full text-xl outline-none md:text-2xl"
+                            className="block w-full bg-transparent text-xl outline-none md:text-2xl"
                             defaultValue={taskDetails.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         />
                     </div>
 
-                    <div className="w-full gap-x-20 lg:grid lg:grid-cols-8">
-                        {/* First column */}
-                        <div className="col-span-6 mt-12">
-                            <div>
-                                <label className="block text-xs uppercase tracking-wide text-gray-500  sm:text-sm">
-                                    Checklist:
-                                </label>
-                                {/* <Checklist
-                                todos={taskDetails.todos}
-                                taskId={taskDetails.id}
-                                boardId={boardId}
-                                userId={userId}
-                            /> */}
-                            </div>
-
-                            <div className="mt-12 w-full">
-                                <div className={`${editing ? '' : 'hidden'}`}>
-                                    <div className="">
-                                        <label
-                                            className="block text-xs uppercase tracking-wide text-gray-500  sm:text-sm"
-                                            htmlFor="desc"
+                    <div className="mt-6 grid grid-cols-3 gap-6">
+                        <section className="col-span-2 grid grid-cols-1 gap-6">
+                            <div className={`${editing ? '' : ' hidden'}`}>
+                                <div>
+                                    <label htmlFor="desc">Description:</label>
+                                    <textarea
+                                        name="desc"
+                                        className="h-56 w-full  rounded-lg border border-gray-300 px-4 py-3 outline-none"
+                                        defaultValue={taskDetails.description}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, description: e.target.value })
+                                        }
+                                    />
+                                    <div>
+                                        <div
+                                            onClick={() => setEditing(false)}
+                                            className="inline-block cursor-pointer rounded-sm bg-gray-300 px-2 py-0.5 text-gray-700"
                                         >
-                                            Description:
-                                        </label>
-                                        <textarea
-                                            name="desc"
-                                            className="h-56 w-full  border border-gray-300 px-4 py-3 outline-none"
-                                            defaultValue={taskDetails.description}
-                                            onChange={(e) =>
-                                                setFormData({ ...formData, description: e.target.value })
-                                            }
-                                        />
-                                        <div>
-                                            <div
-                                                onClick={() => setEditing(false)}
-                                                className="inline-block cursor-pointer rounded-sm bg-gray-300 px-2 py-0.5 text-gray-700"
-                                            >
-                                                Cancel
-                                            </div>
+                                            Cancel
                                         </div>
-                                    </div>
-
-                                    <div className="mt-6">
-                                        <label
-                                            className="block text-xs uppercase tracking-wide text-gray-500 sm:text-sm"
-                                            htmlFor="desc"
-                                        >
-                                            Live Preview:
-                                        </label>
-                                        <ReactMarkdown
-                                            remarkPlugins={[gfm]}
-                                            className="prose overflow-y-auto border border-gray-200 px-2 py-3  text-sm  sm:text-base"
-                                        >
-                                            {formData.description}
-                                        </ReactMarkdown>
                                     </div>
                                 </div>
 
-                                <div
-                                    className={`${editing ? 'hidden' : ''}`}
-                                    onClick={() => setEditing(true)}
-                                >
+                                {/* <div className="mt-6">
+                                    <label
+                                        className="block text-xs uppercase tracking-wide text-gray-500 sm:text-sm"
+                                        htmlFor="desc"
+                                    >
+                                        Live Preview:
+                                    </label>
+                                    <ReactMarkdown
+                                        remarkPlugins={[gfm]}
+                                        className=" overflow-y-auto whitespace-pre-wrap border border-gray-200 px-2  py-3  text-sm sm:text-base"
+                                    >
+                                        {formData.description}
+                                    </ReactMarkdown>
+                                </div> */}
+                            </div>
+
+                            <div className={`${editing ? 'hidden' : ''}`}>
+                                <div onClick={() => setEditing(true)} className="cursor-pointer">
                                     <label
                                         className="block text-xs uppercase tracking-wide text-gray-500  sm:text-sm"
                                         htmlFor="desc"
@@ -167,7 +147,7 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                                     </label>
                                     <ReactMarkdown
                                         remarkPlugins={[gfm]}
-                                        className="prose overflow-y-auto border border-gray-200 bg-gray-50 px-2 py-3 text-sm leading-normal text-gray-900  sm:text-base"
+                                        className=" overflow-y-auto whitespace-pre-wrap rounded-lg border  p-3 text-sm  text-primary-600 "
                                     >
                                         {taskDetails.description === '' || taskDetails.description === null
                                             ? '*No description yet, type here to add*'
@@ -175,11 +155,20 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                                     </ReactMarkdown>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Second column */}
-                        <div className="col-span-2 mt-12">
-                            <div className="">
+                            {/* <div>
+                                <label className="block text-xs uppercase tracking-wide text-gray-500  sm:text-sm">
+                                    Checklist:
+                                </label>
+                                <Checklist
+                                todos={taskDetails.todos}
+                                taskId={taskDetails.id}
+                                boardId={boardId}
+                                userId={userId}
+                            />
+                            </div> */}
+                        </section>
+                        <section className="grid grid-cols-1 gap-6">
+                            <div>
                                 <label
                                     className="block text-xs uppercase tracking-wide text-gray-500  sm:text-sm"
                                     htmlFor="title"
@@ -207,8 +196,7 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                                     </select>
                                 </div>
                             </div>
-
-                            <div className="mt-12">
+                            <div>
                                 <label
                                     className="block text-xs uppercase tracking-wide text-gray-500  sm:text-sm"
                                     htmlFor="title"
@@ -221,7 +209,7 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                             </div>
 
                             {taskDetails.dateAdded ? (
-                                <div className="mt-12">
+                                <div>
                                     <label
                                         className="block text-xs uppercase tracking-wide text-gray-500  sm:text-sm"
                                         htmlFor="desc"
@@ -237,7 +225,20 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                                     </h4>
                                 </div>
                             ) : null}
-                        </div>
+                            <div>
+                                <HiOutlineTrash
+                                    onClick={() => setDeletionModal(true)}
+                                    className="h-5 w-5  cursor-pointer text-red-600"
+                                />
+                            </div>
+                        </section>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3">
+                        {/* First column */}
+                        <div className="col-span-6 mt-12"></div>
+
+                        {/* Second column */}
                     </div>
                 </form>
             </div>

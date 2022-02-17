@@ -24,7 +24,7 @@ export default function Home() {
                         <span className="bg-gradient-to-r from-amber-500 to-amber-300 bg-clip-text text-transparent">
                             Kanban
                         </span>{' '}
-                        planner for personal use that helps you organise your tasks.
+                        planner for personal use that helps you organize your tasks.
                     </h2>
                 </div>
             </div>

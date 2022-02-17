@@ -4,18 +4,21 @@ import Modal from '@/components/Modal/Modal'
 import useAuthStore from '@/stores/useAuthStore'
 import useKanbanStore from '@/stores/useKanbanStore'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import { DragDropContext } from 'react-beautiful-dnd'
 import { HiPlus } from 'react-icons/hi'
 
 // This gets called on every request
-export async function getServerSideProps(context) {
-    const boardId = context.params.boardId
-    return { props: { boardId } }
-}
+// export async function getServerSideProps(context) {
+//     const boardId = context.params.boardId
+//     return { props: { boardId } }
+// }
 
-export default function BoardView({ boardId }) {
+export default function BoardView() {
+    const router = useRouter()
+    const { boardId } = router.query
     const [modal, setModal] = useState(false)
     const [filter, setFilter] = useState(null)
     const filters = ['high', 'medium', 'low']
@@ -148,7 +151,7 @@ export default function BoardView({ boardId }) {
     }
 
     return (
-        <div className="flex w-full flex-col">
+        <div className="flex  flex-1 flex-col  justify-center">
             <Modal
                 modal={modal}
                 ariaText="Add a new task"
@@ -169,9 +172,9 @@ export default function BoardView({ boardId }) {
                 />
             </Modal>
 
-            <div className=" bg-white py-5 text-sm ">
+            <div className=" rounded-lg bg-white p-4 py-5 text-sm shadow">
                 <div className="flex flex-wrap items-center justify-between">
-                    <span className="text-xl">
+                    <span className="text-xl ">
                         <Link href="/boards" className="text-primary-800 hover:text-primary-500">
                             Boards
                         </Link>
@@ -179,7 +182,7 @@ export default function BoardView({ boardId }) {
                         <input
                             type="text"
                             defaultValue={clientKanbanData?.boardData.title}
-                            className="ml-2  truncate"
+                            className="truncate"
                             onChange={(e) =>
                                 setBoard({
                                     type: 'update',
@@ -288,13 +291,13 @@ export default function BoardView({ boardId }) {
                     </Droppable>
                 </DragDropContext>
             </div>
-            <div className=" my-8 flex flex-col overflow-auto font-mono">
+            {/* <div className=" my-8 flex flex-col overflow-auto font-mono">
                 <div className="text-lg text-primary-500">NAME: {clientKanbanData?.boardData.title}</div>
                 <div className="text-lg text-primary-500">BOARD ID: {boardId}</div>
                 <pre className=" text-sm text-primary-500">
                     OBJECT: {JSON.stringify(clientKanbanData, null, 4)}
                 </pre>
-            </div>
+            </div> */}
         </div>
     )
 }
