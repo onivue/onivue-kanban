@@ -60,35 +60,35 @@ function MyApp({ Component, pageProps }) {
                 />
                 <title>onivue-kanban</title>
             </Head>
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-                <Header />
-                <div className="flex min-h-screen flex-col  items-center justify-center pt-[60px]">
-                    {/* <AnimatePresence exitBeforeEnter onExitComplete={() => window.scrollTo(0, 0)}> */}
-                    <motion.main
-                        variants={variants}
-                        initial="hidden"
-                        animate="enter"
-                        exit="exit"
-                        transition={{ type: 'linear' }}
-                        className="flex w-full max-w-[1900px] flex-1  flex-col  p-4 "
-                        key={router.pathname}
-                    >
-                        {router.pathname !== '/auth/register' &&
-                        router.pathname !== '/auth/resetpassword' &&
-                        router.pathname !== '/auth/login' &&
-                        router.pathname !== '/' &&
-                        router.pathname !== '/_error' &&
-                        !user &&
-                        !loading ? (
-                            <Unathorized />
-                        ) : (
-                            !loading && <Component {...pageProps} />
-                        )}
-                    </motion.main>
-                    {/* </AnimatePresence> */}
-                    <Footer />
-                </div>
-            </ThemeProvider>
+            {/* <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}> */}
+            <Header />
+            <div className="flex min-h-screen flex-col  items-center justify-center pt-[60px]">
+                {/* <AnimatePresence exitBeforeEnter onExitComplete={() => window.scrollTo(0, 0)}> */}
+                <motion.main
+                    variants={variants}
+                    initial="hidden"
+                    animate="enter"
+                    exit="exit"
+                    transition={{ type: 'linear' }}
+                    className="flex w-full max-w-[1900px] flex-1  flex-col  p-4 "
+                    key={router.pathname}
+                >
+                    {router.pathname !== '/auth/register' &&
+                    router.pathname !== '/auth/resetpassword' &&
+                    router.pathname !== '/auth/login' &&
+                    router.pathname !== '/' &&
+                    router.pathname !== '/_error' &&
+                    !user &&
+                    !loading ? (
+                        <Unathorized />
+                    ) : (
+                        !loading && <Component {...pageProps} />
+                    )}
+                </motion.main>
+                {/* </AnimatePresence> */}
+                <Footer />
+            </div>
+            {/* </ThemeProvider> */}
         </>
     )
 }

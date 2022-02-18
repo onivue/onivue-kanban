@@ -50,8 +50,10 @@ const Task = ({ allData, id, index, boardId, userId, columnDetails, filterBy }) 
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                         ref={provided.innerRef}
-                        className={`mb-4 rounded px-1.5 py-2.5 shadow-lg transition-shadow duration-300 hover:shadow-xl ${
-                            snapshot.isDragging ? 'bg-primary-200 ' : 'bg-white '
+                        className={`mb-4 rounded-lg border  px-1.5 py-2.5 shadow transition-shadow duration-300 hover:shadow-lg ${
+                            snapshot.isDragging
+                                ? 'border-primary-400 bg-white'
+                                : 'border-primary-100 bg-white'
                         }`}
                     >
                         <div className="flex w-full items-center">

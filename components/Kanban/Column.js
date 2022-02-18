@@ -25,17 +25,15 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
         <>
             <Draggable draggableId={column.id} index={index} key={column.id}>
                 {(provided) => (
-                    <div {...provided.draggableProps} ref={provided.innerRef} className="mr-5">
-                        <div className="bg-primary-50">
+                    <div {...provided.draggableProps} ref={provided.innerRef} className="mr-5 rounded-lg">
+                        <div className="rounded-lg border border-primary-100 bg-primary-50 ">
                             <div
                                 {...provided.dragHandleProps}
-                                className="flex items-center justify-between rounded-sm bg-primary-400 bg-gradient-to-r px-4 py-1"
+                                className="flex items-center justify-between   rounded-t-lg border-b-2 border-primary-100 bg-primary-300 bg-gradient-to-r px-4 py-1 text-white "
                             >
                                 <input
                                     ref={colInput}
-                                    className={` w-10/12 px-2 text-lg text-primary-700  ${
-                                        editingCol ? '' : 'hidden'
-                                    }`}
+                                    className={` w-10/12 px-2 text-lg   ${editingCol ? '' : 'hidden'}`}
                                     type="text"
                                     onBlur={() => setEditing(false)}
                                     value={column.title}
@@ -50,15 +48,13 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                                     }
                                 />
                                 <h2
-                                    className={`truncate text-lg text-primary-100  ${
-                                        editingCol ? 'hidden' : ''
-                                    }`}
+                                    className={`truncate text-lg  ${editingCol ? 'hidden' : ''}`}
                                     onClick={focusInput}
                                 >
                                     {column.title}
                                 </h2>
                                 <div
-                                    className="cursor-pointer text-primary-700 hover:text-primary-50"
+                                    className="cursor-pointer  hover:text-primary-50"
                                     onClick={() => setModal(true)}
                                 >
                                     <HiOutlineTrash />
@@ -69,8 +65,8 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                                     <div
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}
-                                        className={`h-full py-4 px-2 shadow-sm ${
-                                            snapshot.isDraggingOver ? 'bg-green-100 ' : ''
+                                        className={`h-full py-4 px-2  ${
+                                            snapshot.isDraggingOver ? 'rounded-lg bg-primary-100' : ''
                                         }`}
                                     >
                                         {tasks.map((t, i) => (

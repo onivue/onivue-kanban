@@ -32,7 +32,7 @@ const Themes = {
 const Header = ({ className }) => {
     const visible = useHeaderVisible()
     const router = useRouter()
-    const { theme, setTheme } = useTheme()
+    // const { theme, setTheme } = useTheme()
     const user = useAuthStore((state) => state.user)
     const loading = useAuthStore((state) => state.loading)
     const logout = useAuthStore((state) => state.logout)
@@ -43,9 +43,9 @@ const Header = ({ className }) => {
         setIsClient(true)
     }, [])
 
-    const toggleTheme = useCallback(() => {
-        setTheme(theme === Themes.light ? Themes.dark : Themes.light)
-    }, [setTheme, theme])
+    // const toggleTheme = useCallback(() => {
+    //     setTheme(theme === Themes.light ? Themes.dark : Themes.light)
+    // }, [setTheme, theme])
 
     return (
         <nav

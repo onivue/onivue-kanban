@@ -234,7 +234,7 @@ export default function BoardView() {
                             <div
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
-                                className="mx-2 grid auto-cols-[270px] grid-flow-col items-start overflow-x-auto py-4 pt-3 md:pt-2"
+                                className="grid auto-cols-[270px] grid-flow-col items-start overflow-x-auto  py-8 px-1  "
                             >
                                 {clientKanbanData?.columnOrder.map((col, i) => {
                                     const column = clientKanbanData?.columns[col]
@@ -280,10 +280,10 @@ export default function BoardView() {
                                 >
                                     <input
                                         maxLength="20"
-                                        className="truncate rounded-sm bg-transparent bg-primary-50 px-2 py-1 text-primary-800 placeholder-primary-500 outline-none ring-2 focus:ring-primary-500"
+                                        className="cursor-pointer truncate rounded-sm bg-transparent bg-primary-50 px-2 py-1 text-primary-800 placeholder-primary-500  outline-none focus:ring-primary-500"
                                         type="text"
                                         name="newCol"
-                                        placeholder="Add column"
+                                        placeholder="add column"
                                     />
                                 </form>
                             </div>
