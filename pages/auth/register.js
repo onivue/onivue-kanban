@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import useAuthStore from '@/stores/useAuthStore'
+import Button from '@/components/Button/Button'
 
 const RegisterForm = () => {
     const [email, setEmail] = useState('')
@@ -14,7 +15,7 @@ const RegisterForm = () => {
                 <form className="mt-8 space-y-6" action="#" method="POST">
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email address
+                            Email
                         </label>
                         <div className="mt-1">
                             <input
@@ -47,10 +48,7 @@ const RegisterForm = () => {
                     </div>
 
                     <div>
-                        <label
-                            htmlFor="password"
-                            className="block text-sm font-medium text-gray-700"
-                        >
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                             Password
                         </label>
                         <div className="mt-1">
@@ -73,16 +71,16 @@ const RegisterForm = () => {
                     )}
 
                     <div>
-                        <button
-                            className="rounded-full bg-green-500 px-8 py-3 text-center text-xl text-white shadow-lg shadow-green-500"
+                        <Button
                             // loading={loading}
+                            className="w-full"
                             onClick={async (e) => {
                                 e.preventDefault()
                                 register(email, password, username)
                             }}
                         >
                             REGISTER
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

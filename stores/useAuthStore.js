@@ -10,28 +10,35 @@ import {
     updatePassword,
     updateProfile,
 } from 'firebase/auth'
+import { db } from '@/lib/firebase'
+import {
+    collection,
+    query,
+    onSnapshot,
+    doc,
+    addDoc,
+    deleteDoc,
+    setDoc,
+    getDocs,
+    getDoc,
+    arrayUnion,
+    arrayRemove,
+    serverTimestamp,
+    where,
+    orderBy,
+} from 'firebase/firestore'
 
 const useAuthStore = create((set, get) => ({
     user: null,
     loading: true,
     errorMessage: null,
-    setLoading: (payload) => set({ loading: payload }),
-    setUser: (payload) => set({ user: payload }),
     authListener: () => {
         const unsubscribe = onAuthStateChanged(auth, (authUser) => {
             if (authUser) {
                 // console.log('LOGGED IN', authUser)
                 set({ user: authUser })
                 set({ loading: false })
-                // db.collection('users')
-                //     .where('id', '==', authUser.uid)
-                //     .onSnapshot((snapshot) => {
-                //         snapshot.docs.map((doc) => setUserData(doc.data()))
-                //         if (snapshot.docs.length === 0) {
-                //             console.log('WARNING: User could not be found in Collection "users"')
-                //         }
-                //         setLoading(false)
-                //     })
+                // TODO: GET USER DB DATA AND SAVE TO STORE
             } else {
                 set({ user: null })
                 set({ loading: false })
@@ -68,15 +75,23 @@ const useAuthStore = create((set, get) => ({
         try {
             set({ loading: true })
             await createUserWithEmailAndPassword(auth, email, password)
-            await updateProfile(auth.currentUser, {
-                displayName: username,
-                photoURL:
-                    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1174&q=80',
+            // THIS CAN OTHER USERS NOT READ
+            // await updateProfile(auth.currentUser, {
+            //     displayName: username,
+            //     photoURL: "",
+            // })
+            const col = collection(db, `users`)
+            await setDoc(doc(col, auth.currentUser.uid), {
+                username: username,
+                displayName: '',
+                photoURL: '',
             })
             set({ loading: false })
         } catch (err) {
             if (err.code === 'auth/email-already-in-use') {
                 set({ errorMessage: 'Email Already in Use' })
+            } else {
+                set({ errorMessage: 'Something went wrong' })
             }
             set({ loading: false })
         }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import useAuthStore from '@/stores/useAuthStore'
 import Button from '@/components/Button/Button'
+import Link from 'next/link'
 
 const LoginForm = () => {
     const [email, setEmail] = useState('')
@@ -63,6 +64,14 @@ const LoginForm = () => {
                     >
                         LOGIN
                     </Button>
+                    <div className="flex  justify-between text-sm text-gray-400">
+                        <Link href="/auth/resetpassword">
+                            <a>Forgot your password?</a>
+                        </Link>
+                        <Link href="/auth/register">
+                            <a>Register here</a>
+                        </Link>
+                    </div>
                 </form>
             </div>
         </div>

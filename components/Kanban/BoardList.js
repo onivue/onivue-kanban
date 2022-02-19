@@ -63,7 +63,7 @@ const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard })
                                 </button>
                             </div>
                         ))}
-                        {boards.length === 0 ? <h1 className="">Create a new board</h1> : null}
+                        {boards.length === 0 ? <h1 className="">No boards created</h1> : null}
                     </div>
                 </div>
                 <div className="my-6">
@@ -92,16 +92,13 @@ const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard })
                 </div>
             </div>
             <form onSubmit={onSubmitAddNewBoard} autoComplete="off" className="my-4 sm:my-8">
-                <label htmlFor="boardName" className="block text-xl text-primary-500">
-                    Make a new board
-                </label>
                 <div className="mt-2 ">
                     <input
                         required
                         type="text"
                         name="boardName"
-                        className="mr-3  rounded-sm bg-transparent px-2 py-1"
-                        placeholder="enter a board name"
+                        className="mr-3  rounded-sm border-b-2 bg-transparent px-2 py-1 outline-none"
+                        placeholder="add a new board"
                     />
                     <Button type="submit">Add</Button>
                 </div>
