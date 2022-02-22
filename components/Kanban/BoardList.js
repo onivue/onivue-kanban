@@ -46,28 +46,26 @@ const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard })
                     <h1 className="text-xl text-primary-500">Your Boards</h1>
                     <div className="mt-2 flex flex-wrap">
                         {boards.map((b) => (
-                            <div
-                                className="mb-3 mr-4 flex w-full items-center justify-between rounded-lg bg-white py-4 px-6 shadow-md sm:w-auto"
-                                key={b.id}
-                            >
-                                <Link href={`/boards/${b.id}`}>
-                                    <a className="flex items-center justify-between ">
-                                        <h2 className="text-lg   sm:text-2xl">{b.title}</h2>
-                                    </a>
-                                </Link>
-                                <button
-                                    onClick={() => openDeleteModal(b.id)}
-                                    className="ml-6 cursor-pointer text-red-500 hover:text-red-700"
-                                >
-                                    <HiOutlineTrash />
-                                </button>
-                            </div>
+                            <Link href={`/boards/${b.id}`} key={b.id}>
+                                <a className="mb-3 mr-4 flex w-full items-center justify-between rounded-lg bg-white py-4 px-6 shadow-md sm:w-auto">
+                                    <h2 className="text-lg   sm:text-2xl">{b.title}</h2>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            openDeleteModal(b.id)
+                                        }}
+                                        className="ml-6 cursor-pointer text-red-500 hover:text-red-700"
+                                    >
+                                        <HiOutlineTrash />
+                                    </button>
+                                </a>
+                            </Link>
                         ))}
                         {boards.length === 0 ? <h1 className="">No boards created</h1> : null}
                     </div>
                 </div>
                 <div className="my-6">
-                    <h1 className="text-xl text-primary-500">Shared Boards</h1>
+                    <h1 className="text-xl text-primary-500">Shared with you</h1>
                     <div className="mt-2 flex flex-wrap">
                         {boardsShared.map((b) => (
                             <div
@@ -92,12 +90,12 @@ const BoardList = ({ boards = [], boardsShared = [], addNewBoard, deleteBoard })
                 </div>
             </div>
             <form onSubmit={onSubmitAddNewBoard} autoComplete="off" className="my-4 sm:my-8">
-                <div className="mt-2 ">
+                <div className="mt-2 flex">
                     <input
                         required
                         type="text"
                         name="boardName"
-                        className="mr-3  rounded-sm border-b-2 bg-transparent px-2 py-1 outline-none"
+                        className="mr-3 w-full truncate rounded-sm border-b-2 bg-transparent px-2 py-1 outline-none"
                         placeholder="add a new board"
                     />
                     <Button type="submit">Add</Button>

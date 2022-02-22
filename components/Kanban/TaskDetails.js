@@ -84,12 +84,6 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
 
                 <form autoComplete="off">
                     <div className="rounded-lg bg-gray-100 p-4">
-                        <label
-                            className="block text-xs uppercase tracking-wide text-gray-500  sm:text-sm"
-                            htmlFor="title"
-                        >
-                            Title:
-                        </label>
                         <input
                             maxLength="45"
                             type="text"
@@ -100,7 +94,7 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                         />
                     </div>
 
-                    <div className="mt-6 grid grid-cols-3 gap-6">
+                    <div className="mt-6 grid grid-cols-1  gap-6 lg:grid-cols-3">
                         <section className="col-span-2 grid grid-cols-1 gap-6">
                             <div>
                                 <label
@@ -111,11 +105,14 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                                 </label>
                                 <div
                                     onClick={() => setEditing(true)}
-                                    className={classNames(editing ? 'hidden' : '', 'cursor-pointer')}
+                                    className={classNames(
+                                        editing ? 'hidden' : '',
+                                        'w-full cursor-pointer border',
+                                    )}
                                 >
                                     <ReactMarkdown
                                         remarkPlugins={[gfm]}
-                                        className="prose h-48 overflow-y-auto rounded-lg border p-3 text-sm text-primary-500"
+                                        className="prose h-48 max-w-none overflow-y-auto rounded-lg  p-3 text-sm text-primary-500"
                                         children={
                                             taskDetails.description === '' || taskDetails.description === null
                                                 ? '*No description yet, type here to add*'
@@ -123,7 +120,7 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                                         }
                                     />
                                 </div>
-                                <div className={`${editing ? '' : ' hidden'}`}>
+                                <div className={`${editing ? '' : ' hidden'} relative flex`}>
                                     <textarea
                                         name="desc"
                                         className="h-48 w-full  rounded-lg border border-gray-300 px-4 py-3 outline-none  "
@@ -132,16 +129,15 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                                             setFormData({ ...formData, description: e.target.value })
                                         }
                                     />
-                                    <div>
-                                        <Button
-                                            style={'secondary'}
-                                            onClick={() => setEditing(false)}
-                                            type="button"
-                                            className="absolute"
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </div>
+
+                                    <Button
+                                        style={'secondary'}
+                                        onClick={() => setEditing(false)}
+                                        type="button"
+                                        className="absolute right-2 bottom-2"
+                                    >
+                                        Preview
+                                    </Button>
                                 </div>
                             </div>
 
@@ -157,7 +153,7 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                             />
                             </div> */}
                         </section>
-                        <section className="grid grid-cols-1 gap-6">
+                        <section className="grid grid-cols-2 justify-items-center gap-6 lg:grid-cols-1 lg:justify-items-start">
                             <div>
                                 <label
                                     className="block text-xs uppercase tracking-wide text-gray-500  sm:text-sm"
@@ -204,7 +200,7 @@ const TaskDetails = ({ taskDetails, boardId, userId, columnDetails, modal }) => 
                                         className="block text-xs uppercase tracking-wide text-gray-500  sm:text-sm"
                                         htmlFor="desc"
                                     >
-                                        Date Added:
+                                        Added:
                                     </label>
                                     <h4 className="tracking-wide">
                                         {

@@ -151,7 +151,7 @@ export default function BoardView() {
     }
 
     return (
-        <div className="flex  flex-1 flex-col  justify-center">
+        <div className="flex  h-full flex-1  flex-col justify-center">
             <Modal
                 modal={modal}
                 ariaText="Add a new task"
@@ -172,17 +172,18 @@ export default function BoardView() {
                 />
             </Modal>
 
-            <div className=" rounded-lg bg-white p-4 py-5 text-sm shadow">
+            <div className="flex-1 rounded-lg bg-white p-4 py-5 text-sm shadow">
                 <div className="flex flex-wrap items-center justify-between">
-                    <span className="text-xl ">
+                    <span className="flex text-xl">
                         <Link href="/boards" className="text-primary-800 hover:text-primary-500">
                             Boards
                         </Link>
                         <span className="">/</span>
+
                         <input
                             type="text"
                             defaultValue={clientKanbanData?.boardData.title}
-                            className="truncate"
+                            className="w-full truncate"
                             onChange={(e) =>
                                 setBoard({
                                     type: 'update',
@@ -198,7 +199,7 @@ export default function BoardView() {
                     </span>
                     <div className="flex flex-wrap items-center sm:space-x-9">
                         <div className="mt-2 flex items-center sm:mt-0 ">
-                            <h3 className="mr-2">Show Priority: </h3>
+                            <h3 className="mr-2">Filter Priority: </h3>
                             <div className="flex space-x-1 rounded-sm bg-primary-50 text-primary-900">
                                 {filters.map((f) => (
                                     <div
@@ -206,19 +207,13 @@ export default function BoardView() {
                                         className={`cursor-pointer  border-black px-3 py-1 capitalize hover:bg-primary-600 hover:text-primary-50 ${
                                             filter === f ? 'bg-primary-600 text-primary-50' : ''
                                         }`}
-                                        onClick={() => setFilter(f === 'all' ? null : f)}
+                                        onClick={() =>
+                                            f === 'all' || filter === f ? setFilter(null) : setFilter(f)
+                                        }
                                     >
                                         {f}
                                     </div>
                                 ))}
-                                {filter ? (
-                                    <div
-                                        className="cursor-pointer rounded-sm px-2 py-1 hover:text-primary-700"
-                                        onClick={() => setFilter(null)}
-                                    >
-                                        All
-                                    </div>
-                                ) : null}
                             </div>
                         </div>
 
@@ -234,7 +229,7 @@ export default function BoardView() {
                             <div
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
-                                className="grid auto-cols-[270px] grid-flow-col items-start overflow-x-auto  py-8 px-1  "
+                                className="grid auto-cols-[320px] grid-flow-col items-start overflow-x-auto  py-8 px-1  "
                             >
                                 {clientKanbanData?.columnOrder.map((col, i) => {
                                     const column = clientKanbanData?.columns[col]

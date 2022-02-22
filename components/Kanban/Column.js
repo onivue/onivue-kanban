@@ -2,12 +2,8 @@ import useKanbanStore from '@/stores/useKanbanStore'
 import { useState, useRef } from 'react'
 import { Droppable, Draggable } from 'react-beautiful-dnd'
 import { HiOutlineTrash } from 'react-icons/hi'
-import Modal from '../Modal/Modal'
-import Task from './Task'
-// import { Bin, Exclaim } from './Icons'
-// import { debounce } from '../utils'
-// import Modal from './Modal'
-// import { db, firebase } from '../firebase/fbConfig'
+import Modal from '@/components/Modal/Modal'
+import Task from '@/components/Kanban/Task'
 
 const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) => {
     const setColumn = useKanbanStore((state) => state.setColumn)
@@ -33,7 +29,9 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                             >
                                 <input
                                     ref={colInput}
-                                    className={` w-10/12 px-2 text-lg   ${editingCol ? '' : 'hidden'}`}
+                                    className={` w-10/12 bg-transparent text-lg outline-none ${
+                                        editingCol ? '' : 'hidden'
+                                    }`}
                                     type="text"
                                     onBlur={() => setEditing(false)}
                                     value={column.title}
@@ -99,7 +97,7 @@ const Column = ({ column, tasks, allData, boardId, userId, filterBy, index }) =>
                                     tasks: tasks,
                                 })
                             }}
-                            title="Board Delete confirmation"
+                            title="Column Delete confirmation"
                             type="warning"
                         >
                             <h2 className="mb-2 text-xl text-gray-900 ">
