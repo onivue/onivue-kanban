@@ -1,7 +1,7 @@
 import '@/styles/globals.css'
 import useAuthStore from '@/stores/useAuthStore'
 import { ThemeProvider } from 'next-themes'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
@@ -29,6 +29,8 @@ function MyApp({ Component, pageProps }) {
         }
     }, [])
 
+    const [isRouterReady, setIsRouterReady] = useState(true)
+
     /* IF USER IS AUTHENTICATED REDIRECT AUTH PAGES ... */
     useEffect(() => {
         if (user) {
@@ -37,11 +39,12 @@ function MyApp({ Component, pageProps }) {
                 router.pathname === '/auth/resetpassword' ||
                 router.pathname === '/auth/login'
             ) {
-                router.push('/')
+                router.push('/boards')
             }
+            setIsRouterReady(true)
         }
         // console.log(router)
-    }, [user])
+    }, [user, router])
 
     // if (loading) {
     //     return <div> loading</div>
@@ -62,8 +65,8 @@ function MyApp({ Component, pageProps }) {
             </Head>
             {/* <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}> */}
             <Header />
+            {isRouterReady && null}
             <div className="flex min-h-screen flex-col  items-center justify-center pt-[60px]">
-                {/* <AnimatePresence exitBeforeEnter onExitComplete={() => window.scrollTo(0, 0)}> */}
                 <motion.main
                     variants={variants}
                     initial="hidden"
@@ -85,7 +88,7 @@ function MyApp({ Component, pageProps }) {
                         !loading && <Component {...pageProps} />
                     )}
                 </motion.main>
-                {/* </AnimatePresence> */}
+
                 <Footer />
             </div>
             {/* </ThemeProvider> */}

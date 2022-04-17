@@ -174,7 +174,7 @@ export default function BoardView() {
 
             <div className="flex-1 rounded-lg bg-white p-4 py-5 text-sm shadow">
                 <div className="flex flex-wrap items-center justify-between">
-                    <span className="flex text-xl">
+                    <div className="flex text-xl text-primary-500">
                         <Link href="/boards" className="text-primary-800 hover:text-primary-500">
                             Boards
                         </Link>
@@ -183,7 +183,7 @@ export default function BoardView() {
                         <input
                             type="text"
                             defaultValue={clientKanbanData?.boardData.title}
-                            className="w-full truncate"
+                            className=" w-full truncate bg-inherit"
                             onChange={(e) =>
                                 setBoard({
                                     type: 'update',
@@ -196,7 +196,8 @@ export default function BoardView() {
                                 })
                             }
                         />
-                    </span>
+                    </div>
+
                     <div className="flex flex-wrap items-center sm:space-x-9">
                         <div className="mt-2 flex items-center sm:mt-0 ">
                             <h3 className="mr-2">Filter Priority: </h3>
@@ -216,10 +217,15 @@ export default function BoardView() {
                                 ))}
                             </div>
                         </div>
-
-                        <div className="  cursor-pointer rounded-full   p-2  " onClick={() => setModal(true)}>
-                            <HiPlus className="h-6 w-6 transition-all duration-150 hover:scale-110 hover:text-primary-400" />
-                        </div>
+                    </div>
+                </div>
+                <div className="flex rounded-full pt-8">
+                    <div
+                        onClick={() => setModal(true)}
+                        className="cursor-pointer transition-all duration-150 hover:text-primary-400"
+                    >
+                        <HiPlus className="inline h-6 w-6 " />
+                        Add Task
                     </div>
                 </div>
 

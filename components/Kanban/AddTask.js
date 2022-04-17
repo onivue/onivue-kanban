@@ -67,7 +67,7 @@ const AddTask = ({ boardId, userId, close, allCols }) => {
                         <label className="block sm:inline" htmlFor="column">
                             Select a column: {''}
                         </label>
-                        <select name="column" required className="select" className="rounded-lg">
+                        <select name="column" required className="rounded-lg">
                             {allCols.map((c) => (
                                 <option className="option" value={c} key={c}>
                                     {c}
